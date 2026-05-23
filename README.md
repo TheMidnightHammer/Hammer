@@ -1,11 +1,11 @@
 # Hammer
 Hammer is an open source Engine using Vulkan as backend.
-It supports simple collision detection, there is an example in the demo folder.
+It supports simple collision detection, model loading, there is an example of all features in the demo folder.
 
 [Showoff.webm](https://github.com/user-attachments/assets/d3d87ad2-bde6-4431-944c-7280afff7d88)
 
 # The goal of Hammer Engine
-The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible.
+The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5 can strugle with light tasks such as playing Doom 3, you need better software with a very optimize the rendering pipeline.
 
 # The performance of Hammer
 
@@ -16,10 +16,12 @@ The #1 goal of Hammer is it's performance on low-end machines. It out-performs m
 Hammer supports for all major linux distro, windows (In testing) and chromebook.
 
 # Upcoming features
-1. Point lights, check this (branch)[https://github.com/TheMidnightHammer/HammerEngine/tree/lighting] for more detail.
+1. Point lights
 2. Directional lights
 3. More physics
 4. Text rendering
+5. Compute shaders
+6. SSBO support
 
 # What does Hammer support?
 
