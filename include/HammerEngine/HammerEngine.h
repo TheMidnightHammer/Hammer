@@ -90,7 +90,7 @@ namespace std {
             return ((hash<glm::vec3>()(vertex.pos) ^
                    (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
                    (hash<glm::vec2>()(vertex.texCoord) << 1) ^
-                   (hash<glm::vec3>()(vertex.normal) << 1); // Added normal hash
+                   (hash<glm::vec3>()(vertex.normal) << 1);
         }
     };
 }
@@ -117,16 +117,16 @@ public:
     HammerTexture(const HammerTexture&) = delete;
     HammerTexture& operator=(const HammerTexture&) = delete;
 
+    VkDescriptorSet descriptorSet = VK_NULL_HANDLE; 
+
+private:
     VkImage image = VK_NULL_HANDLE;
     VkDeviceMemory imageMemory = VK_NULL_HANDLE;
     VkImageView imageView = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
 
-    VkDescriptorSet descriptorSet = VK_NULL_HANDLE; 
-
     HammerEngine& engine;
 
-private:
     void createTextureImage(const std::string& path);
     void createTextureImageView();
     void createTextureSampler(HammerTextureFilter filter);
@@ -160,16 +160,23 @@ public:
     HammerPipeline* getPipeline() const { return pipeline; }
     HammerTexture* getTexture() const { return texture; }
     
+    void updateBuffers(std::vector<Vertex> vertexData, std::vector<uint32_t> indexData);
+
+    HammerPipeline* GetPipeline();
+    HammerTexture* GetTexture();
+
+    uint32_t GetIndexCount();
+
+private:
 
     void createVertexBuffer(const std::vector<Vertex>& vertices);
     void createIndexBuffer(const std::vector<uint32_t>& indices);
-
-    void updateBuffers(std::vector<Vertex> vertexData, std::vector<uint32_t> indexData);
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
 
     HammerEngine& engine;
+
     HammerPipeline* pipeline;
     HammerTexture* texture;
 

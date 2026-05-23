@@ -263,7 +263,7 @@ void HammerEngine::recreateSwapChain() {
 
 void HammerEngine::removeMeshRenderer(int index){
     if(index > meshs.size() || index > 0){
-        std::cout << "Warning,Trying to remove mesh from renderer with index out of range !!!\n";
+        std::cerr << "Warning,Trying to remove mesh from renderer with index out of range !!!\n";
         return;
     }
     HammerMesh* deleteMeshPtr = meshs[index];
@@ -294,8 +294,6 @@ HammerModel::HammerModel(const std::string& path){
     }
 
     std::unordered_map<Vertex, uint32_t> uniqueVertices{};
-
-    // ... [existing tinyobj setup code] ...
 
     for (const auto& shape : shapes) {
         for (const auto& index : shape.mesh.indices) {
@@ -344,6 +342,18 @@ HammerModel::HammerModel(const std::string& path){
 
 void HammerEngine::addMeshRenderer(HammerMesh* mesh) {
     meshs.push_back(mesh);
+}
+
+HammerPipeline* HammerMesh::GetPipeline() {
+    return this->pipeline;
+}
+
+HammerTexture* HammerMesh::GetTexture() {
+    return this->texture;
+}
+
+uint32_t HammerMesh::GetIndexCount() {
+    return indexCount;
 }
 
 HammerMesh::HammerMesh(HammerEngine& engine, HammerPipeline* pipeline, HammerTexture* texture, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) 
@@ -454,10 +464,19 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
 
 void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFrame) {
     if(this->draw){
-        if (pipeline == nullptr) return; 
-        if (texture == nullptr) return;
+        if (pipeline == nullptr){
+            std::cerr << "WARNING: pipeline is NULL\n";
+            return;
+        } 
+        if (texture == nullptr){
+            std::cerr << "WARNING: texture is NULL\n";
+            return;
+        } 
 
-        if (texture->descriptorSet == VK_NULL_HANDLE) return;
+        if (texture->descriptorSet == VK_NULL_HANDLE){ 
+            std::cerr << "WARNING: descriptor set is NULL\n";
+            return;
+        }
 
         if (currentFrame >= engine.globalDescriptorSets.size() || 
             engine.globalDescriptorSets[currentFrame] == VK_NULL_HANDLE) {
@@ -485,6 +504,8 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
         model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
         model = glm::scale(model, scale);
 
+        // TODO: remove GLM, less dependencies less trouble
+
         MeshPushConstants push{};
         push.modelMatrix = model;
 
@@ -507,7 +528,10 @@ void HammerMesh::updateBuffers(std::vector<Vertex> vertexData, std::vector<uint3
     VkDeviceSize indexSize = sizeof(uint32_t) * indexData.size();
     this->indexCount = static_cast<uint32_t>(indexData.size());
 
-    if (vertexSize == 0 || indexSize == 0) return;
+    if (vertexSize == 0 || indexSize == 0) {
+        std::cerr << "WARNING: vertex size and/or index size is 0\n";
+        return;
+    }
 
     void* vData;
     vkMapMemory(engine.device, engine.stagingBufferMemory, 0, vertexSize, 0, &vData);
@@ -1031,7 +1055,7 @@ HammerTexture::~HammerTexture() {
     vkDestroyImage(engine.device, image, nullptr);
     vkFreeMemory(engine.device, imageMemory, nullptr);
     
-    // Note: Descriptor Sets are usually freed automatically when the pool is destroyed i think
+    // Note: Descriptor Sets are usually freed automatically when the pool is destroyed i think, well i fucking hope
 }
 
 
@@ -1339,7 +1363,7 @@ void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
                     meshPipeline->pipelineLayout, 
                     1,             
                     1,             
-                    &mesh->texture->descriptorSet,
+                    &mesh->GetTexture()->descriptorSet,
                     0, 
                     nullptr
                 );
