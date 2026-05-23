@@ -79,32 +79,35 @@ VkVertexInputBindingDescription Vertex::getBindingDescription() {
     return bindingDescription;
 }
 
-std::array<VkVertexInputAttributeDescription, 3> Vertex::getAttributeDescriptions() {
-    std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+std::array<VkVertexInputAttributeDescription, 4> Vertex::getAttributeDescriptions() {
+    std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
 
+    // 0: Position
     attributeDescriptions[0].binding = 0;
     attributeDescriptions[0].location = 0;
     attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
     attributeDescriptions[0].offset = offsetof(Vertex, pos);
 
+    // 1: Color
     attributeDescriptions[1].binding = 0;
     attributeDescriptions[1].location = 1;
     attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
     attributeDescriptions[1].offset = offsetof(Vertex, color);
 
+    // 2: TexCoord
     attributeDescriptions[2].binding = 0;
     attributeDescriptions[2].location = 2;
     attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
     attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
 
+    // 3: Normal
+    attributeDescriptions[3].binding = 0;
+    attributeDescriptions[3].location = 3;
+    attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[3].offset = offsetof(Vertex, normal);
+
     return attributeDescriptions;
 }
-
-struct UniformBufferObject {
-    alignas(16) glm::mat4 model;
-    alignas(16) glm::mat4 view;
-    alignas(16) glm::mat4 proj;
-};
 
 void HammerEngine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<HammerEngine*>(glfwGetWindowUserPointer(window));
@@ -260,7 +263,7 @@ void HammerEngine::recreateSwapChain() {
 
 void HammerEngine::removeMeshRenderer(int index){
     if(index > meshs.size() || index > 0){
-        std::cout << "Warning,Trying to remove mesh from renderer with index out of range !!!\n";
+        std::cerr << "Warning,Trying to remove mesh from renderer with index out of range !!!\n";
         return;
     }
     HammerMesh* deleteMeshPtr = meshs[index];
@@ -270,63 +273,87 @@ void HammerEngine::removeMeshRenderer(int index){
 }
 
 HammerModel::HammerModel(const std::string& path){
-        tinyobj::attrib_t attrib;
-        std::vector<tinyobj::shape_t> shapes;
-        std::vector<tinyobj::material_t> materials;
-        std::string warn, err;
+    tinyobj::attrib_t attrib;
+    std::vector<tinyobj::shape_t> shapes;
+    std::vector<tinyobj::material_t> materials;
+    std::string warn, err;
 
-        std::string warn_and_err; 
-        bool ret = tinyobj::LoadObj(
-            &attrib, 
-            &shapes, 
-            &materials, 
-            &warn_and_err, 
-            path.c_str(), 
-            nullptr,   
-            true
-        );
+    std::string warn_and_err; 
+    bool ret = tinyobj::LoadObj(
+        &attrib, 
+        &shapes, 
+        &materials, 
+        &warn_and_err, 
+        path.c_str(), 
+        nullptr,   
+        true
+    );
 
-        if (!ret) {
-            throw std::runtime_error("HammerEngine: Failed to load OBJ: " + warn_and_err);
-        }
+    if (!ret) {
+        throw std::runtime_error("HammerEngine: Failed to load OBJ: " + warn_and_err);
+    }
 
-        std::unordered_map<Vertex, uint32_t> uniqueVertices{};
+    std::unordered_map<Vertex, uint32_t> uniqueVertices{};
 
-        for (const auto& shape : shapes) {
-            for (const auto& index : shape.mesh.indices) {
-                Vertex vertex{};
+    for (const auto& shape : shapes) {
+        for (const auto& index : shape.mesh.indices) {
+            Vertex vertex{};
 
-                // Position
-                vertex.pos = {
-                    attrib.vertices[3 * index.vertex_index + 0],
-                    attrib.vertices[3 * index.vertex_index + 1],
-                    attrib.vertices[3 * index.vertex_index + 2]
+            // Position
+            vertex.pos = {
+                attrib.vertices[3 * index.vertex_index + 0],
+                attrib.vertices[3 * index.vertex_index + 1],
+                attrib.vertices[3 * index.vertex_index + 2]
+            };
+
+            // UV Coordinates
+            if (index.texcoord_index >= 0) {
+                vertex.texCoord = {
+                    attrib.texcoords[2 * index.texcoord_index + 0],
+                    1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
                 };
-
-                // UV Coordinates (with Vulkan Y-flip)
-                if (index.texcoord_index >= 0) {
-                    vertex.texCoord = {
-                        attrib.texcoords[2 * index.texcoord_index + 0],
-                        1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
-                    };
-                }
-
-                vertex.color = {1.0f, 1.0f, 1.0f};
-
-                // Deduplication: only add vertex if it's new
-                if (uniqueVertices.count(vertex) == 0) {
-                    uniqueVertices[vertex] = static_cast<uint32_t>(vertexData.size());
-                    vertexData.push_back(vertex);
-                }
-
-                indexData.push_back(uniqueVertices[vertex]);
             }
+
+            // Normals
+            if (index.normal_index >= 0) {
+                vertex.normal = {
+                    attrib.normals[3 * index.normal_index + 0],
+                    attrib.normals[3 * index.normal_index + 1],
+                    attrib.normals[3 * index.normal_index + 2]
+                };
+            } else {
+                // Fallback if the OBJ file lacks normal data
+                vertex.normal = {0.0f, 1.0f, 0.0f}; 
+            }
+
+            vertex.color = {1.0f, 1.0f, 1.0f};
+
+            // Deduplication: only add vertex if it's new
+            if (uniqueVertices.count(vertex) == 0) {
+                uniqueVertices[vertex] = static_cast<uint32_t>(vertexData.size());
+                vertexData.push_back(vertex);
+            }
+
+            indexData.push_back(uniqueVertices[vertex]);
         }
     }
+}
 
 
 void HammerEngine::addMeshRenderer(HammerMesh* mesh) {
     meshs.push_back(mesh);
+}
+
+HammerPipeline* HammerMesh::GetPipeline() {
+    return this->pipeline;
+}
+
+HammerTexture* HammerMesh::GetTexture() {
+    return this->texture;
+}
+
+uint32_t HammerMesh::GetIndexCount() {
+    return indexCount;
 }
 
 HammerMesh::HammerMesh(HammerEngine& engine, HammerPipeline* pipeline, HammerTexture* texture, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices) 
@@ -437,10 +464,19 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
 
 void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFrame) {
     if(this->draw){
-        if (pipeline == nullptr) return; 
-        if (texture == nullptr) return;
+        if (pipeline == nullptr){
+            std::cerr << "WARNING: pipeline is NULL\n";
+            return;
+        } 
+        if (texture == nullptr){
+            std::cerr << "WARNING: texture is NULL\n";
+            return;
+        } 
 
-        if (texture->descriptorSet == VK_NULL_HANDLE) return;
+        if (texture->descriptorSet == VK_NULL_HANDLE){ 
+            std::cerr << "WARNING: descriptor set is NULL\n";
+            return;
+        }
 
         if (currentFrame >= engine.globalDescriptorSets.size() || 
             engine.globalDescriptorSets[currentFrame] == VK_NULL_HANDLE) {
@@ -468,6 +504,8 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
         model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
         model = glm::scale(model, scale);
 
+        // TODO: remove GLM, less dependencies less trouble
+
         MeshPushConstants push{};
         push.modelMatrix = model;
 
@@ -490,7 +528,10 @@ void HammerMesh::updateBuffers(std::vector<Vertex> vertexData, std::vector<uint3
     VkDeviceSize indexSize = sizeof(uint32_t) * indexData.size();
     this->indexCount = static_cast<uint32_t>(indexData.size());
 
-    if (vertexSize == 0 || indexSize == 0) return;
+    if (vertexSize == 0 || indexSize == 0) {
+        std::cerr << "WARNING: vertex size and/or index size is 0\n";
+        return;
+    }
 
     void* vData;
     vkMapMemory(engine.device, engine.stagingBufferMemory, 0, vertexSize, 0, &vData);
@@ -776,7 +817,7 @@ void HammerEngine::createDescriptorSetLayout() {
     uboLayoutBinding.binding = 0;
     uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     uboLayoutBinding.descriptorCount = 1;
-    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+    uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 
     VkDescriptorSetLayoutCreateInfo globalLayoutInfo{};
     globalLayoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -1014,7 +1055,7 @@ HammerTexture::~HammerTexture() {
     vkDestroyImage(engine.device, image, nullptr);
     vkFreeMemory(engine.device, imageMemory, nullptr);
     
-    // Note: Descriptor Sets are usually freed automatically when the pool is destroyed i think
+    // Note: Descriptor Sets are usually freed automatically when the pool is destroyed i think, well i fucking hope
 }
 
 
@@ -1322,7 +1363,7 @@ void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
                     meshPipeline->pipelineLayout, 
                     1,             
                     1,             
-                    &mesh->texture->descriptorSet,
+                    &mesh->GetTexture()->descriptorSet,
                     0, 
                     nullptr
                 );
@@ -1374,6 +1415,13 @@ void HammerEngine::updateUniformBuffer(uint32_t currentImage) {
 
     glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
     ubo.view = view;
+    
+    float radius = 5.0f;
+    ubo.lightPosition = glm::vec3(
+        radius * cos(time), 
+        5.0f,               // Keep height constant
+        radius * sin(time)
+    );
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }

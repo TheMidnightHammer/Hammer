@@ -15,6 +15,12 @@ The #1 goal of Hammer is it's performance on low-end machines. It out-performs m
 
 Hammer supports for all major linux distro, windows (In testing) and chromebook.
 
+# Upcoming features
+1. Point lights, check this (branch)[https://github.com/TheMidnightHammer/HammerEngine/tree/lighting] for more detail.
+2. Directional lights
+3. More physics
+4. Text rendering
+
 # What does Hammer support?
 
 Vulkan Native: Built from the ground up for modern hardware efficiency.

@@ -25,19 +25,41 @@
 
 #include "../../lib/tiny_obj_loader.h"
 
+struct UniformBufferObject {
+    alignas(16) glm::mat4 model;
+    alignas(16) glm::mat4 view;
+    alignas(16) glm::mat4 proj;
 
+    // Use 0.0 - 1.0 range
+    // Ambient: White at 20% intensity
+    alignas(16) glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.2f};
+
+    // Light Position
+    alignas(16) glm::vec3 lightPosition{0.0f, 0.0f, 0.0f}; 
+    
+    // PADDING: This ensures lightColor starts on a 16-byte boundary
+    float padding; 
+
+    // Light Color: Pure white at full intensity
+    alignas(16) glm::vec4 lightColor{1.0f, 1.0f, 1.0f, 1.0f};
+};
 
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 color;
     glm::vec2 texCoord;
+    glm::vec3 normal; // Add normal
 
     bool operator==(const Vertex& other) const {
-        return pos == other.pos && color == other.color && texCoord == other.texCoord;
+        return pos == other.pos && 
+               color == other.color && 
+               texCoord == other.texCoord &&
+               normal == other.normal; // Include normal in equality check
     }
 
     static VkVertexInputBindingDescription getBindingDescription();
-    static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
+    // Change array size from 3 to 4
+    static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions(); 
 };
 
 struct MeshPushConstants {
@@ -61,12 +83,14 @@ struct SwapChainSupportDetails {
 class HammerEngine;
 class HammerPipeline;
 
+//i dont really undersand this shit
 namespace std {
     template<> struct hash<Vertex> {
         size_t operator()(Vertex const& vertex) const {
             return ((hash<glm::vec3>()(vertex.pos) ^
                    (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^
-                   (hash<glm::vec2>()(vertex.texCoord) << 1);
+                   (hash<glm::vec2>()(vertex.texCoord) << 1) ^
+                   (hash<glm::vec3>()(vertex.normal) << 1);
         }
     };
 }
@@ -93,16 +117,16 @@ public:
     HammerTexture(const HammerTexture&) = delete;
     HammerTexture& operator=(const HammerTexture&) = delete;
 
+    VkDescriptorSet descriptorSet = VK_NULL_HANDLE; 
+
+private:
     VkImage image = VK_NULL_HANDLE;
     VkDeviceMemory imageMemory = VK_NULL_HANDLE;
     VkImageView imageView = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
 
-    VkDescriptorSet descriptorSet = VK_NULL_HANDLE; 
-
     HammerEngine& engine;
 
-private:
     void createTextureImage(const std::string& path);
     void createTextureImageView();
     void createTextureSampler(HammerTextureFilter filter);
@@ -136,16 +160,23 @@ public:
     HammerPipeline* getPipeline() const { return pipeline; }
     HammerTexture* getTexture() const { return texture; }
     
+    void updateBuffers(std::vector<Vertex> vertexData, std::vector<uint32_t> indexData);
+
+    HammerPipeline* GetPipeline();
+    HammerTexture* GetTexture();
+
+    uint32_t GetIndexCount();
+
+private:
 
     void createVertexBuffer(const std::vector<Vertex>& vertices);
     void createIndexBuffer(const std::vector<uint32_t>& indices);
-
-    void updateBuffers(std::vector<Vertex> vertexData, std::vector<uint32_t> indexData);
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
 
     HammerEngine& engine;
+
     HammerPipeline* pipeline;
     HammerTexture* texture;
 
