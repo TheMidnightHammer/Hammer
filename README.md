@@ -33,6 +33,8 @@ Developer Friendly: Designed for rapid prototyping without sacrificing performan
 
 Easy to load 3d models: Using tinyobjloader to load .obj files discards any vertex and index that is duplicated.
 
+Async logger: Print debugging stats to the terminal without slowing down the rendering pipeline.
+
 <img width="632" height="706" alt="image" src="https://github.com/user-attachments/assets/157a91fb-d69d-4deb-9de6-efdec45e3402" />
 <img width="1228" height="966" alt="image" src="https://github.com/user-attachments/assets/7d6a529a-c3ba-4a30-881c-aeba3b27118b" />
 
