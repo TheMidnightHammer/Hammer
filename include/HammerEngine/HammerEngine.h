@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <glm/gtx/hash.hpp>
 #include <cstdint>
+#include <cstring>
 #include <vulkan/vulkan_core.h>
 
 #include "../../lib/tiny_obj_loader.h"
@@ -48,7 +49,7 @@ struct Vertex {
     glm::vec3 pos;
     glm::vec3 color;
     glm::vec2 texCoord;
-    glm::vec3 normal; // Add normal
+    glm::vec3 normal;
 
     bool operator==(const Vertex& other) const {
         return pos == other.pos && 
@@ -62,9 +63,13 @@ struct Vertex {
     static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions(); 
 };
 
+class HammerEngine;
+class HammerPipeline;
+class HammerSSBO;
+
 struct MeshPushConstants {
     glm::mat4 modelMatrix;
-};
+}; // prob wont change, to pass data to the shader just use SSBOs
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -78,10 +83,6 @@ struct SwapChainSupportDetails {
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
 };
-
-
-class HammerEngine;
-class HammerPipeline;
 
 //i dont really undersand this shit
 namespace std {
@@ -140,6 +141,13 @@ public:
                HammerTexture* texture, 
                const std::vector<Vertex>& vertices, 
                const std::vector<uint32_t>& indices);
+
+    // TODO:
+    // HammerMesh(HammerSSBO* targetSSBO) : ssbo(targetSSBO) {
+    //     // i can now access ssbo->getBuffer() when setting up your 
+    //     // vkUpdateDescriptorSets or binding resources.
+    // }
+
     
     ~HammerMesh();
 
@@ -184,6 +192,8 @@ private:
     VkDeviceMemory vertexBufferMemory = VK_NULL_HANDLE;
     VkBuffer indexBuffer = VK_NULL_HANDLE;
     VkDeviceMemory indexBufferMemory = VK_NULL_HANDLE;
+
+    HammerSSBO* ssbo;
 
     uint32_t indexCount;
 };
@@ -458,7 +468,73 @@ public:
     std::vector<char> readFile(std::string& filename);
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
-    
+
+};
+
+class HammerSSBO {
+private:
+    HammerEngine* engine;
+    VkBuffer buffer = VK_NULL_HANDLE;
+    VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
+    VkDeviceSize bufferSize;
+
+public:
+    // Accept raw data pointer and byte size to handle dynamic arrays properly
+    HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size) 
+        : engine(engine), bufferSize(size) {
+        
+        createStorageBuffer(data);
+    }
+
+    ~HammerSSBO() {
+        if (buffer != VK_NULL_HANDLE) {
+            vkDestroyBuffer(engine->device, buffer, nullptr);
+        }
+        if (bufferMemory != VK_NULL_HANDLE) {
+            vkFreeMemory(engine->device, bufferMemory, nullptr);
+        }
+    }
+
+    // Getters for your Descriptor Sets and Draw calls
+    VkBuffer getBuffer() const { return buffer; }
+    VkDeviceSize getSize() const { return bufferSize; }
+
+private:
+    void createStorageBuffer(const void* data) {
+        VkBufferCreateInfo bufferInfo{};
+        bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+        bufferInfo.size = bufferSize;
+        bufferInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+        bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+        if (vkCreateBuffer(engine->device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to create storage buffer!");
+        }
+
+        VkMemoryRequirements memRequirements;
+        vkGetBufferMemoryRequirements(engine->device, buffer, &memRequirements);
+
+        VkMemoryAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+        allocInfo.allocationSize = memRequirements.size;
+        allocInfo.memoryTypeIndex = engine->findMemoryType(
+            memRequirements.memoryTypeBits, 
+            VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+        );
+
+        if (vkAllocateMemory(engine->device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to allocate storage buffer memory!");
+        }
+
+        vkBindBufferMemory(engine->device, buffer, bufferMemory, 0);
+
+        if (data != nullptr) {
+            void* mappedData;
+            vkMapMemory(engine->device, bufferMemory, 0, bufferSize, 0, &mappedData);
+            memcpy(mappedData, data, static_cast<size_t>(bufferSize));
+            vkUnmapMemory(engine->device, bufferMemory);
+        }
+    }
 };
 
 #endif
