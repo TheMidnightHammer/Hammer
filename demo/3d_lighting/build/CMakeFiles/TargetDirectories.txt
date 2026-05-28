@@ -1,3 +1,0 @@
-/home/gbd/Downloads/Hammer/demo/3d_lighting/build/CMakeFiles/voxel_Engine.dir
-/home/gbd/Downloads/Hammer/demo/3d_lighting/build/CMakeFiles/edit_cache.dir
-/home/gbd/Downloads/Hammer/demo/3d_lighting/build/CMakeFiles/rebuild_cache.dir
