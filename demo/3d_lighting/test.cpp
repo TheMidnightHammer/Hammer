@@ -9,7 +9,6 @@
 #include <string>
 #include <glm/glm.hpp>
 
-
 int main() {
     HammerEngine Engine;
 
@@ -59,7 +58,7 @@ int main() {
     // Clean up allocated resources
     delete mainPipeline;
     delete dirtTexture;
-    // myMesh is cleaned up inside Engine.cleanup() via the loop we added earlier
+    // myMesh is cleaned up inside Engine.cleanup() via the loop i added earlier
 
     Engine.cleanup();
 
