@@ -30,9 +30,31 @@ int main() {
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
+
+    struct test
+    {
+        /* data */
+    };
+    
+
+    struct Particle { 
+        std::vector<int> particleList; 
+    };
+
+    Particle particles; 
+    particles.particleList.push_back(10);
+    particles.particleList.push_back(20);
+    particles.particleList.push_back(30);
+
+    // Calculate exact byte size of the vector payload
+    VkDeviceSize bufferSize = particles.particleList.size() * sizeof(int);
+
+    // 2. Initialize and Link components
+    // (Assuming 'engine' is an already initialized HammerEngine instance)
+    HammerSSBO* my_SSBO = new HammerSSBO(&Engine, particles.particleList.data(), bufferSize);
     
     // Allocate pipeline with new
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true);
+    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, my_SSBO);
 
     HammerModel model("model/teapot.obj");
 

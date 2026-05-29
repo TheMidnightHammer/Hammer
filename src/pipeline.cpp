@@ -13,7 +13,8 @@ HammerPipeline::HammerPipeline(
     std::string& vertPath, 
     std::string& fragPath,
     int renderTriangleMod,
-    bool triangleRender2SideMode) : hammerEngine(engine) {
+    bool triangleRender2SideMode,
+    HammerSSBO* targetSSBO) : hammerEngine(engine) {
     
     createGraphicsPipeline(vertPath, fragPath, renderTriangleMod, triangleRender2SideMode);
 }

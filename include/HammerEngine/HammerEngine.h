@@ -137,16 +137,10 @@ private:
 class HammerMesh {
 public:
     HammerMesh(HammerEngine& engine, 
-               HammerPipeline* pipeline, 
-               HammerTexture* texture, 
-               const std::vector<Vertex>& vertices, 
-               const std::vector<uint32_t>& indices);
-
-    // TODO:
-    // HammerMesh(HammerSSBO* targetSSBO) : ssbo(targetSSBO) {
-    //     // i can now access ssbo->getBuffer() when setting up your 
-    //     // vkUpdateDescriptorSets or binding resources.
-    // }
+                HammerPipeline* pipeline, 
+                HammerTexture* texture, 
+                const std::vector<Vertex>& vertices, 
+                const std::vector<uint32_t>& indices);
 
     
     ~HammerMesh();
@@ -193,8 +187,6 @@ private:
     VkBuffer indexBuffer = VK_NULL_HANDLE;
     VkDeviceMemory indexBufferMemory = VK_NULL_HANDLE;
 
-    HammerSSBO* ssbo;
-
     uint32_t indexCount;
 };
 
@@ -205,7 +197,15 @@ public:
         std::string& vertPath, 
         std::string& fragPath,
         int renderTriangleMod,
-        bool triangleRender2SideMode);
+        bool triangleRender2SideMode,
+        HammerSSBO* targetSSBO
+    );
+
+        // TODO:
+    // HammerMesh(HammerSSBO* targetSSBO) : ssbo(targetSSBO) {
+    //     // i can now access ssbo->getBuffer() when setting up your 
+    //     // vkUpdateDescriptorSets or binding resources.
+    // }
 
     ~HammerPipeline();
 
@@ -221,7 +221,8 @@ public:
 
     HammerEngine& hammerEngine;
     VkPipeline graphicsPipeline;
-    VkPipelineLayout pipelineLayout; 
+    VkPipelineLayout pipelineLayout;    
+    HammerSSBO* ssbo;
 };
 
 
