@@ -66,10 +66,9 @@ We are looking for contributors! If you want to contribute to Hammer, go to the 
 
 1. Optimizing the Engine even more for low-end machines.
 2. Extended physics/collision features.
-3. Separating the functions from Hammer.cpp into separate files.
-4. Add documentation, to help people learn Hammer Engine.
-5. Add more demos to the demo/ folder.
-6. Implement multi-command buffer recording on different cores
+5. Add documentation, to help people learn Hammer.
+6. Add more demos to the demo/ folder.
+7. Implement multi-command buffer recording on different cores
 
 # How to use?
 
