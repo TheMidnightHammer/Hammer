@@ -10,6 +10,7 @@
 #include <chrono>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -21,6 +22,7 @@
 #include <unordered_map>
 #include <glm/gtx/hash.hpp>
 #include <cstdint>
+#include <cstring>
 #include <vulkan/vulkan_core.h>
 #include <iostream>
 #include <string>
@@ -81,7 +83,7 @@ struct Vertex {
     glm::vec3 pos;
     glm::vec3 color;
     glm::vec2 texCoord;
-    glm::vec3 normal; // Add normal
+    glm::vec3 normal;
 
     bool operator==(const Vertex& other) const {
         return pos == other.pos && 
@@ -95,9 +97,13 @@ struct Vertex {
     static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions(); 
 };
 
+class HammerEngine;
+class HammerPipeline;
+class HammerSSBO;
+
 struct MeshPushConstants {
     glm::mat4 modelMatrix;
-};
+}; // prob wont change, to pass data to the shader just use SSBOs
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -111,10 +117,6 @@ struct SwapChainSupportDetails {
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
 };
-
-
-class HammerEngine;
-class HammerPipeline;
 
 //i dont really undersand this shit
 namespace std {
@@ -169,10 +171,11 @@ private:
 class HammerMesh {
 public:
     HammerMesh(HammerEngine& engine, 
-               HammerPipeline* pipeline, 
-               HammerTexture* texture, 
-               const std::vector<Vertex>& vertices, 
-               const std::vector<uint32_t>& indices);
+                HammerPipeline* pipeline, 
+                HammerTexture* texture, 
+                const std::vector<Vertex>& vertices, 
+                const std::vector<uint32_t>& indices);
+
     
     ~HammerMesh();
 
@@ -228,7 +231,15 @@ public:
         std::string& vertPath, 
         std::string& fragPath,
         int renderTriangleMod,
-        bool triangleRender2SideMode);
+        bool triangleRender2SideMode,
+        HammerSSBO* targetSSBO
+    );
+
+        // TODO:
+    // HammerMesh(HammerSSBO* targetSSBO) : ssbo(targetSSBO) {
+    //     // i can now access ssbo->getBuffer() when setting up your 
+    //     // vkUpdateDescriptorSets or binding resources.
+    // }
 
     ~HammerPipeline();
 
@@ -244,7 +255,8 @@ public:
 
     HammerEngine& hammerEngine;
     VkPipeline graphicsPipeline;
-    VkPipelineLayout pipelineLayout; 
+    VkPipelineLayout pipelineLayout;    
+    HammerSSBO* ssbo = nullptr;
 };
 
 
@@ -339,6 +351,7 @@ public:
 	VkRenderPass renderPass;
 	VkDescriptorSetLayout globalSetLayout; 
     VkDescriptorSetLayout textureSetLayout;
+    VkDescriptorSetLayout ssboSetLayout;
     std::vector<VkDescriptorSet> globalDescriptorSets;
 
 	VkCommandPool commandPool;
@@ -491,7 +504,32 @@ public:
     std::vector<char> readFile(std::string& filename);
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
-    
+
+};
+
+class HammerSSBO {
+private:
+    HammerEngine* engine;
+    VkBuffer buffer = VK_NULL_HANDLE;
+    VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
+    VkDeviceSize bufferSize;
+    VkDescriptorSet SsboDescriptorSet = VK_NULL_HANDLE;
+
+public:
+    HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size);
+
+    ~HammerSSBO();
+
+    VkBuffer getBuffer();
+    VkDeviceSize getSize();
+    VkDescriptorSet getDescriptorSet();
+
+    void updateData(const void* newData, VkDeviceSize newSize);
+
+private:
+    void createStorageBuffer(const void* data);
+
+    void allocateAndWriteDescriptorSet();
 };
 
 #endif

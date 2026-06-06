@@ -79,7 +79,7 @@ int main() {
     // 2. Setup Pipeline using raw pointer
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true);
+    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, nullptr);
 
     // 3. Create Mesh and store in Engine
     HammerMesh* sceneMesh = new HammerMesh(

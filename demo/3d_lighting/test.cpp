@@ -30,8 +30,22 @@ int main() {
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
     
+
+    struct Particle { 
+        std::vector<int> particleList; 
+    };
+
+    Particle particles; 
+    particles.particleList.push_back(10);
+    particles.particleList.push_back(20);
+    particles.particleList.push_back(30);
+
+    // Calculate exact byte size of the vector payload
+    VkDeviceSize bufferSize = particles.particleList.size() * sizeof(int);
+    HammerSSBO* my_SSBO = new HammerSSBO(&Engine, particles.particleList.data(), bufferSize);
+    
     // Allocate pipeline with new
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true);
+    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, my_SSBO);
 
     HammerModel model("model/teapot.obj");
 
@@ -58,7 +72,8 @@ int main() {
     // Clean up allocated resources
     delete mainPipeline;
     delete dirtTexture;
-    // myMesh is cleaned up inside Engine.cleanup() via the loop i added earlier
+    delete my_SSBO;
+    // myMesh is cleaned up inside Engine.cleanup() via the loop we added earlier
 
     Engine.cleanup();
 

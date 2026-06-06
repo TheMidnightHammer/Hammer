@@ -71,7 +71,7 @@ int main() {
     std::string fPath = "shaders/frag.spv";
     
     // Allocate raw pointers
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true);
+    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, nullptr);
     HammerTexture* boxTexture = new HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);
 
     std::vector<Vertex> vertices;
