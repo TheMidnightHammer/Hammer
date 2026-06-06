@@ -502,7 +502,7 @@ public:
 
     VkBuffer getBuffer() const { return buffer; }
     VkDeviceSize getSize() const { return bufferSize; }
-    VkDescriptorSet getDescriptorSet() const { if(SsboDescriptorSet == VK_NULL_HANDLE) {std::cout << "fucking ahhh mistake\n";} return SsboDescriptorSet; }
+    VkDescriptorSet getDescriptorSet() const { return SsboDescriptorSet; }
 
 private:
     void createStorageBuffer(const void* data) {

@@ -73,6 +73,7 @@ int main() {
     // Clean up allocated resources
     delete mainPipeline;
     delete dirtTexture;
+    delete my_SSBO;
     // myMesh is cleaned up inside Engine.cleanup() via the loop we added earlier
 
     Engine.cleanup();
