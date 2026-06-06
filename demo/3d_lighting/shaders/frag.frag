@@ -11,6 +11,10 @@ layout(set = 0, binding = 0) uniform UniformBufferObject {
 
 layout(set = 1, binding = 0) uniform sampler2D texSampler;
 
+layout(set = 2, binding = 0) readonly buffer ParticleBuffer {
+    int particleList[];
+} ssbo;
+
 layout(location = 0) in vec3 fragColor;
 layout(location = 1) in vec2 fragTexCoord;
 layout(location = 2) in vec3 fragWorldPos;

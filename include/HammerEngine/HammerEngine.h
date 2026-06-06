@@ -10,6 +10,7 @@
 #include <chrono>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/glm.hpp>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <stdexcept>
@@ -222,7 +223,7 @@ public:
     HammerEngine& hammerEngine;
     VkPipeline graphicsPipeline;
     VkPipelineLayout pipelineLayout;    
-    HammerSSBO* ssbo;
+    HammerSSBO* ssbo = nullptr;
 };
 
 
@@ -317,6 +318,7 @@ public:
 	VkRenderPass renderPass;
 	VkDescriptorSetLayout globalSetLayout; 
     VkDescriptorSetLayout textureSetLayout;
+    VkDescriptorSetLayout ssboSetLayout;
     std::vector<VkDescriptorSet> globalDescriptorSets;
 
 	VkCommandPool commandPool;
@@ -472,19 +474,87 @@ public:
 
 };
 
+// class HammerSSBO {
+// private:
+//     HammerEngine* engine;
+//     VkBuffer buffer = VK_NULL_HANDLE;
+//     VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
+//     VkDeviceSize bufferSize;
+
+// public:
+//     // Accept raw data pointer and byte size to handle dynamic arrays properly
+//     HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size) 
+//         : engine(engine), bufferSize(size) {
+        
+//         createStorageBuffer(data);
+//     }
+
+//     ~HammerSSBO() {
+//         if (buffer != VK_NULL_HANDLE) {
+//             vkDestroyBuffer(engine->device, buffer, nullptr);
+//         }
+//         if (bufferMemory != VK_NULL_HANDLE) {
+//             vkFreeMemory(engine->device, bufferMemory, nullptr);
+//         }
+//     }
+
+//     // Getters for your Descriptor Sets and Draw calls
+//     VkBuffer getBuffer() const { return buffer; }
+//     VkDeviceSize getSize() const { return bufferSize; }
+
+// private:
+//     void createStorageBuffer(const void* data) {
+//         VkBufferCreateInfo bufferInfo{};
+//         bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
+//         bufferInfo.size = bufferSize;
+//         bufferInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
+//         bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
+
+//         if (vkCreateBuffer(engine->device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+//             throw std::runtime_error("Failed to create storage buffer!");
+//         }
+
+//         VkMemoryRequirements memRequirements;
+//         vkGetBufferMemoryRequirements(engine->device, buffer, &memRequirements);
+
+//         VkMemoryAllocateInfo allocInfo{};
+//         allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
+//         allocInfo.allocationSize = memRequirements.size;
+//         allocInfo.memoryTypeIndex = engine->findMemoryType(
+//             memRequirements.memoryTypeBits, 
+//             VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
+//         );
+
+//         if (vkAllocateMemory(engine->device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+//             throw std::runtime_error("Failed to allocate storage buffer memory!");
+//         }
+
+//         vkBindBufferMemory(engine->device, buffer, bufferMemory, 0);
+
+//         if (data != nullptr) {
+//             void* mappedData;
+//             vkMapMemory(engine->device, bufferMemory, 0, bufferSize, 0, &mappedData);
+//             memcpy(mappedData, data, static_cast<size_t>(bufferSize));
+//             vkUnmapMemory(engine->device, bufferMemory);
+//         }
+//     }
+// };
+
 class HammerSSBO {
 private:
     HammerEngine* engine;
     VkBuffer buffer = VK_NULL_HANDLE;
     VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
     VkDeviceSize bufferSize;
+    VkDescriptorSet SsboDescriptorSet = VK_NULL_HANDLE;
 
 public:
-    // Accept raw data pointer and byte size to handle dynamic arrays properly
+    // Simple constructor: Just give it the engine instance, data, and its size
     HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size) 
         : engine(engine), bufferSize(size) {
         
         createStorageBuffer(data);
+        allocateAndWriteDescriptorSet();
     }
 
     ~HammerSSBO() {
@@ -496,9 +566,9 @@ public:
         }
     }
 
-    // Getters for your Descriptor Sets and Draw calls
     VkBuffer getBuffer() const { return buffer; }
     VkDeviceSize getSize() const { return bufferSize; }
+    VkDescriptorSet getDescriptorSet() const { if(SsboDescriptorSet == VK_NULL_HANDLE) {std::cout << "fucking ahhh mistake\n";} return SsboDescriptorSet; }
 
 private:
     void createStorageBuffer(const void* data) {
@@ -535,6 +605,35 @@ private:
             memcpy(mappedData, data, static_cast<size_t>(bufferSize));
             vkUnmapMemory(engine->device, bufferMemory);
         }
+    }
+
+    void allocateAndWriteDescriptorSet() {
+        VkDescriptorSetAllocateInfo allocInfo{};
+        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+        // Accessing engine fields directly:
+        allocInfo.descriptorPool = engine->descriptorPool; 
+        allocInfo.descriptorSetCount = 1;
+        allocInfo.pSetLayouts = &engine->ssboSetLayout;
+
+        if (vkAllocateDescriptorSets(engine->device, &allocInfo, &SsboDescriptorSet) != VK_SUCCESS) {
+            throw std::runtime_error("Failed to allocate SSBO descriptor set!");
+        }
+
+        VkDescriptorBufferInfo bufferInfo{};
+        bufferInfo.buffer = buffer;
+        bufferInfo.offset = 0;
+        bufferInfo.range = bufferSize;
+
+        VkWriteDescriptorSet descriptorWrite{};
+        descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        descriptorWrite.dstSet = SsboDescriptorSet;
+        descriptorWrite.dstBinding = 0; 
+        descriptorWrite.dstArrayElement = 0;
+        descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        descriptorWrite.descriptorCount = 1;
+        descriptorWrite.pBufferInfo = &bufferInfo;
+
+        vkUpdateDescriptorSets(engine->device, 1, &descriptorWrite, 0, nullptr);
     }
 };
 

@@ -47,7 +47,7 @@ int main() {
     std::string vShader = "shaders/vert.spv";
     std::string fShader = "shaders/frag.spv";
 
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vShader, fShader, 1, true);
+    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vShader, fShader, 1, true, NULL);
     
     HammerMesh* sceneMesh = new HammerMesh(Engine, mainPipeline, mainTexture, getVertices(player), localIndices);
 

@@ -14,7 +14,8 @@ HammerPipeline::HammerPipeline(
     std::string& fragPath,
     int renderTriangleMod,
     bool triangleRender2SideMode,
-    HammerSSBO* targetSSBO) : hammerEngine(engine) {
+    HammerSSBO* targetSSBO
+    ) : hammerEngine(engine), ssbo(targetSSBO) {
     
     createGraphicsPipeline(vertPath, fragPath, renderTriangleMod, triangleRender2SideMode);
 }
@@ -122,14 +123,18 @@ void HammerPipeline::createGraphicsPipeline(
     pushConstantRange.offset = 0;
     pushConstantRange.size = sizeof(glm::mat4);
 
-    std::array<VkDescriptorSetLayout, 2> setLayouts = {
+    std::vector<VkDescriptorSetLayout> setLayouts = {
         hammerEngine.globalSetLayout, 
         hammerEngine.textureSetLayout
     };
 
+    if (this->ssbo != nullptr) {
+        setLayouts.push_back(hammerEngine.ssboSetLayout);
+    }
+
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
     pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-    pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size()); // Should be 2
+    pipelineLayoutInfo.setLayoutCount = static_cast<uint32_t>(setLayouts.size()); // 2, or 3 because of the SSBO
     pipelineLayoutInfo.pSetLayouts = setLayouts.data();
 
     pipelineLayoutInfo.pushConstantRangeCount = 1;

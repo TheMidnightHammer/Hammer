@@ -220,6 +220,7 @@ void HammerEngine::cleanup() {
 
     vkDestroyDescriptorSetLayout(device, globalSetLayout, nullptr);
     vkDestroyDescriptorSetLayout(device, textureSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(device, ssboSetLayout, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, renderFinishedSemaphores[i], nullptr);
@@ -474,7 +475,7 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
         } 
 
         if (texture->descriptorSet == VK_NULL_HANDLE){ 
-            std::cerr << "WARNING: descriptor set is NULL\n";
+            std::cerr << "WARNING: texture descriptor set is NULL\n";
             return;
         }
 
@@ -493,8 +494,19 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 1, 1, &texture->descriptorSet, 0, nullptr);
         
-        if (pipeline->ssbo != nullptr && pipeline->ssbo->getDescriptorSet() != VK_NULL_HANDLE) {
-            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 2, 1, &pipeline->ssbo->getDescriptorSet(), 0, nullptr);
+        VkDescriptorSet ssboDescriptorSet = pipeline->ssbo->getDescriptorSet(); // compiler was yapping too much
+
+        if (ssboDescriptorSet != VK_NULL_HANDLE) {
+            vkCmdBindDescriptorSets(
+                commandBuffer, 
+                VK_PIPELINE_BIND_POINT_GRAPHICS, 
+                pipeline->pipelineLayout, 
+                2, 
+                1, 
+                &ssboDescriptorSet, 
+                0, 
+                nullptr
+            );
         }
 
         glm::mat4 model = glm::mat4(1.0f);
@@ -843,6 +855,22 @@ void HammerEngine::createDescriptorSetLayout() {
     if (vkCreateDescriptorSetLayout(device, &textureLayoutInfo, nullptr, &textureSetLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture descriptor set layout!");
     }
+
+    VkDescriptorSetLayoutBinding ssboLayoutBinding{};
+    ssboLayoutBinding.binding = 0; 
+    ssboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    ssboLayoutBinding.descriptorCount = 1;
+    ssboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    ssboLayoutBinding.pImmutableSamplers = nullptr;
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+    layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+    layoutInfo.bindingCount = 1;
+    layoutInfo.pBindings = &ssboLayoutBinding;
+
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &ssboSetLayout) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create SSBO descriptor set layout!");
+    }
 }
 
 void HammerEngine::createFramebuffers() {
@@ -1158,20 +1186,29 @@ void HammerEngine::createUniformBuffers() {
 }
 
 void HammerEngine::createDescriptorPool() {
-    std::array<VkDescriptorPoolSize, 2> poolSizes{};
+    std::array<VkDescriptorPoolSize, 3> poolSizes{};
     
+    // Uniform Buffers (Set 0 for global matrices - used by ALL pipelines)
     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 10;
     
+    // Combined Image Samplers (Set 1 for textures - used by ALL pipelines)
     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
     poolSizes[1].descriptorCount = 1000; 
 
+    // Storage Buffers (Set 2 for custom SSBO data - used ONLY by SSBO-enabled pipelines)
+    // We allocate a budget of 100 max concurrent SSBO allocations across the engine
+    uint32_t maxSSBOs = 100;
+    poolSizes[2].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    poolSizes[2].descriptorCount = maxSSBOs;
+
     VkDescriptorPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
-    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+    poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size()); // Now 3
     poolInfo.pPoolSizes = poolSizes.data();
     
-    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) + MaxTextures;
+    // Total maximum sets that can be allocated out of this pool at any given time
+    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) + MaxTextures + maxSSBOs;
     
     poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT; 
 

@@ -100,7 +100,7 @@ int main() {
     std::string fPath = "shaders/frag.spv";
     
     // Allocate raw pointer for pipeline
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true);
+    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, nullptr);
 
     // Allocate raw pointer for texture
     HammerTexture* dirtTexture = new HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);
