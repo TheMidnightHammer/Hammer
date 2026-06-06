@@ -9,7 +9,6 @@
 #include <string>
 #include <glm/glm.hpp>
 
-
 int main() {
     HammerEngine Engine;
 

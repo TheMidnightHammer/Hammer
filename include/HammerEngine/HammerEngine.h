@@ -24,8 +24,41 @@
 #include <cstdint>
 #include <cstring>
 #include <vulkan/vulkan_core.h>
+#include <iostream>
+#include <string>
+#include <thread>
+#include <atomic>
+#include <queue>
+#include <mutex>
+#include <condition_variable>
 
 #include "../../lib/tiny_obj_loader.h"
+
+class AsyncLogger {
+private:
+    std::queue<std::string> logQueue;
+    std::mutex queueMutex;
+    std::condition_variable cv;
+    std::thread workerThread;
+    std::atomic<bool> running{true};
+
+    void ProcessLogs();
+
+public:
+    AsyncLogger();
+    ~AsyncLogger();
+
+    void Log(const std::string& message);
+};
+
+// use it like this
+// std::string frameData = "X: " + std::to_string(posX) + 
+//                         " | Y: " + std::to_string(posY) + 
+//                         " | Z: " + std::to_string(posZ);
+
+// g_Logger.Log(frameData); 
+
+
 
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;

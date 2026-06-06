@@ -16,6 +16,7 @@ set(SOURCE_FILES
     ../../src/buffers.cpp
     ../../src/pipeline.cpp
     ../../src/ssbo.cpp
+    ../../src/AsyncLogger.cpp
 )
 
 find_package(Vulkan REQUIRED)
