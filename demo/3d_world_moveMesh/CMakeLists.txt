@@ -16,6 +16,7 @@ set(SOURCE_FILES
     ../../src/rect.cpp
     ../../src/buffers.cpp
     ../../src/pipeline.cpp
+    ../../src/ssbo.cpp
 )
 
 find_package(Vulkan REQUIRED)
