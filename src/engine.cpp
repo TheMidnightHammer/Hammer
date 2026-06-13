@@ -1452,13 +1452,6 @@ void HammerEngine::updateUniformBuffer(uint32_t currentImage) {
 
     glm::mat4 view = glm::lookAt(cameraPosition, cameraPosition + cameraFront, cameraUp);
     ubo.view = view;
-    
-    float radius = 5.0f;
-    ubo.lightPosition = glm::vec3(
-        radius * cos(time), 
-        5.0f,               // Keep height constant
-        radius * sin(time)
-    );
 
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }

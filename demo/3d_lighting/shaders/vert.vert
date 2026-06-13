@@ -4,13 +4,12 @@ layout(set = 0, binding = 0) uniform UniformBufferObject {
     mat4 model;
     mat4 view;
     mat4 proj;
-    vec4 ambientLightColor;
-    vec3 lightPosition;
-    vec4 lightColor;
 } ubo;
 
 layout(set = 2, binding = 0) readonly buffer ParticleBuffer {
-    int particleList[];
+    vec4 ambientLightColor;
+    vec3 lightPosition;
+    vec4 lightColor;
 } ssbo;
 
 layout(location = 0) in vec3 inPosition;
