@@ -10,20 +10,22 @@
 
 void HammerAsyncLogger::ProcessLogs() {
     while (running || !logQueue.empty()) {
-        std::unique_lock<std::mutex> lock(queueMutex);
-        // Wait until there is a log message or the logger is stopped
-        cv.wait(lock, [this] { return !logQueue.empty() || !running; });
-
-        while (!logQueue.empty()) {
-            // Use standard \n, NEVER std::endl here to keep the background thread fast too
-            std::cout << logQueue.front() << "\n";
-            logQueue.pop();
+        std::queue<std::string> localQueue;
+        
+        {
+            std::unique_lock<std::mutex> lock(queueMutex);
+            cv.wait(lock, [this] { return !logQueue.empty() || !running; });
+            std::swap(logQueue, localQueue);
+        }
+        while (!localQueue.empty()) {
+            std::cout << localQueue.front() << "\n";
+            localQueue.pop();
         }
     }
 }
 
 HammerAsyncLogger::HammerAsyncLogger() {
-    // make the background thread immediately
+    running = true;
     workerThread = std::thread(&HammerAsyncLogger::ProcessLogs, this);
 }
 
@@ -34,7 +36,6 @@ HammerAsyncLogger::~HammerAsyncLogger() {
         workerThread.join();
     }
 }
-
 
 void HammerAsyncLogger::Log(const std::string& message) {
     std::lock_guard<std::mutex> lock(queueMutex);
