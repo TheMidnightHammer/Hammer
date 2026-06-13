@@ -5,6 +5,7 @@
  */
 
 #include "../../include/HammerEngine/HammerEngine.h"
+#include <GLFW/glfw3.h>
 #include <vector>
 #include <string>
 #include <glm/glm.hpp>
@@ -31,18 +32,26 @@ int main() {
     std::string fPath = "shaders/frag.spv";
     
 
-    struct Particle { 
-        std::vector<int> particleList; 
+    struct Light { 
+        // Use 0.0 - 1.0 range
+        // Ambient: White at 20% intensity
+        alignas(16) glm::vec4 ambientLightColor{1.0f, 1.0f, 1.0f, 0.2f};
+
+        // Light Position
+        alignas(16) glm::vec3 lightPosition{0.0f, 0.0f, 0.0f}; 
+        
+        // PADDING: This ensures lightColor starts on a 16-byte boundary
+        float padding; 
+
+        // Light Color: Pure white at full intensity
+        alignas(16) glm::vec4 lightColor{1.0f, 1.0f, 1.0f, 1.0f};
     };
 
-    Particle particles; 
-    particles.particleList.push_back(10);
-    particles.particleList.push_back(20);
-    particles.particleList.push_back(30);
+    Light light; 
 
     // Calculate exact byte size of the vector payload
-    VkDeviceSize bufferSize = particles.particleList.size() * sizeof(int);
-    HammerSSBO* my_SSBO = new HammerSSBO(&Engine, particles.particleList.data(), bufferSize);
+    VkDeviceSize bufferSize = sizeof(Light);
+    HammerSSBO* my_SSBO = new HammerSSBO(&Engine, &light, bufferSize);
     
     // Allocate pipeline with new
     HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, my_SSBO);
@@ -57,9 +66,26 @@ int main() {
     
     Engine.meshs.push_back(myMesh1);
 
+    HammerAsyncLogger logger;
+
     Engine.drawPassStart();
     while (!glfwWindowShouldClose(Engine.window)) {
         Engine.updateFrameTimeStart();
+
+        static auto startTime = std::chrono::high_resolution_clock::now();
+
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+        
+        float radius = 5.0f;
+        light.lightPosition = glm::vec3(
+            radius * cos(time), 
+            7.0f,               // Keep height constant
+            radius * sin(time)
+        );
+
+        my_SSBO->updateData(&light, bufferSize);
+
 
         Engine.updateCameraDefault3D();
         

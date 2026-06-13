@@ -8,7 +8,7 @@
 
 #include "../include/HammerEngine/HammerEngine.h"
 
-void AsyncLogger::ProcessLogs() {
+void HammerAsyncLogger::ProcessLogs() {
     while (running || !logQueue.empty()) {
         std::unique_lock<std::mutex> lock(queueMutex);
         // Wait until there is a log message or the logger is stopped
@@ -22,12 +22,12 @@ void AsyncLogger::ProcessLogs() {
     }
 }
 
-AsyncLogger::AsyncLogger() {
+HammerAsyncLogger::HammerAsyncLogger() {
     // make the background thread immediately
-    workerThread = std::thread(&AsyncLogger::ProcessLogs, this);
+    workerThread = std::thread(&HammerAsyncLogger::ProcessLogs, this);
 }
 
-AsyncLogger::~AsyncLogger() {
+HammerAsyncLogger::~HammerAsyncLogger() {
     running = false;
     cv.notify_one();
     if (workerThread.joinable()) {
@@ -36,7 +36,7 @@ AsyncLogger::~AsyncLogger() {
 }
 
 
-void AsyncLogger::Log(const std::string& message) {
+void HammerAsyncLogger::Log(const std::string& message) {
     std::lock_guard<std::mutex> lock(queueMutex);
     logQueue.push(message);
     cv.notify_one();
