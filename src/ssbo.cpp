@@ -1,4 +1,5 @@
 #include "../include/HammerEngine/HammerEngine.h" 
+#include <stdexcept>
 
 
 HammerSSBO::HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size) 
@@ -19,7 +20,7 @@ HammerSSBO::~HammerSSBO() {
 
 VkBuffer HammerSSBO::getBuffer() { return buffer; }
 VkDeviceSize HammerSSBO::getSize() { return bufferSize; }
-VkDescriptorSet HammerSSBO::getDescriptorSet() { return SsboDescriptorSet; }
+VkDescriptorSet HammerSSBO::getDescriptorSet() {    return SsboDescriptorSet; }
 
 void HammerSSBO::updateData(const void* newData, VkDeviceSize newSize) {
     if (newData == nullptr || newSize == 0) return;
