@@ -30,17 +30,12 @@ int main() {
 
     HammerFont font(engine, "fonts/Arial.ttf");
 
-    HammerCustomTexture* helloWorldTex = font.createTextPtr(engine, "wow, facy text ?", 0, 48, 512, 512);
-    if (helloWorldTex == nullptr) {
-        throw std::runtime_error("Text texture was not created!");
-    }
+    HammerCustomTexture* helloWorldTex = font.createTextPtr(engine, "wow, facy text ? -TheMidnightHammer", 0, 48, 512, 512);
 
     HammerMesh* textMesh = engine.CreateTextQuad(engine, textPipeline, helloWorldTex, -1.0f, 0.0f, 2.0f, 0.5f);
 
     engine.addMeshRenderer(textMesh);
 
-
-    // --- Main Loop ---
     engine.drawPassStart();
     while (!glfwWindowShouldClose(engine.window)) {
         engine.updateFrameTimeStart();
@@ -56,7 +51,6 @@ int main() {
     // Clean up allocated memory instead of .reset()
     delete helloWorldTex;
     delete textPipeline;
-    //delete textMesh;
     
     engine.cleanup();
 

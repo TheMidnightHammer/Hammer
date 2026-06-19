@@ -511,7 +511,7 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
         model = glm::rotate(model, glm::radians(rotation.z), glm::vec3(0, 0, 1));
         model = glm::scale(model, scale);
 
-        // TODO: remove GLM, less dependencies less trouble
+        // TODO: remove GLM, less dependencies less trouble, -TheMidnightHammer
 
         MeshPushConstants push{};
         push.modelMatrix = model;
