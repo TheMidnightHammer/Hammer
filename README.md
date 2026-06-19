@@ -18,9 +18,8 @@ Hammer supports for all major linux distro, windows (In testing) and chromebook 
 # Upcoming features
 1. Directional lights
 2. More physics
-3. Text rendering (in work now)
-4. Compute shaders
-5. Multithreading support (recording command buffers on different cores, Help needed)
+3. Compute shaders
+4. Multithreading support (recording command buffers on different cores, Help needed)
 
 # What does Hammer support?
 
