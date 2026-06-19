@@ -140,7 +140,8 @@ private:
 class HammerFont {
 public:
     HammerFont(HammerEngine& engine,const char* fontPath);
-    HammerCustomTexture* createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h);
+    HammerCustomTexture* createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
+    HammerCustomTexture* createFontAtlasPtr(HammerEngine& engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
 private:
     stbtt_fontinfo* fonts = NULL;
     unsigned short fontSize = 0;

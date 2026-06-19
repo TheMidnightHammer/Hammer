@@ -32,7 +32,7 @@ HammerFont::HammerFont(HammerEngine& eng, const char* fontPath) : engine(eng) {
     fontSize++;
 }
 
-HammerCustomTexture* HammerFont::createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h) {
+HammerCustomTexture* HammerFont::createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter) {
     unsigned char* bitmap = (unsigned char*)calloc(1, b_w * b_h);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
@@ -64,11 +64,53 @@ HammerCustomTexture* HammerFont::createTextPtr(HammerEngine& engine, const char*
         x += (unsigned int)((float)ax * scale) + (int)((float)stbtt_GetCodepointKernAdvance(&fonts[index], word[i], word[i + 1]) * scale);
     }
 
-    HammerCustomTexture* output = new HammerCustomTexture(engine, bitmap, b_w, b_h, HammerTextureFilter::Linear);
+    HammerCustomTexture* output = new HammerCustomTexture(engine, bitmap, b_w, b_h, filter);
 
     //stbi_write_png("out.png", b_w, b_h, 1, bitmap, b_w); // for debug, you can enable it
 
     free(bitmap); 
     
+    return output;
+}
+
+HammerCustomTexture* HammerFont::createFontAtlasPtr(HammerEngine& engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter) {
+    const char* word = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    unsigned int numChars = strlen(word);
+
+    unsigned char* bitmap = (unsigned char*)calloc(1, b_w * b_h);
+    float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
+
+    int ascent = 0; int descent = 0; int lineGap = 0;
+    stbtt_GetFontVMetrics(&fonts[index], &ascent, &descent, &lineGap);
+    ascent = (int)((float)ascent * scale);
+
+    unsigned int slotWidth = b_w / numChars; 
+
+    for (unsigned int i = 0; i < numChars; ++i) {
+        /* get bounding box */
+        int c_x1, c_y1, c_x2, c_y2;
+        stbtt_GetCodepointBitmapBox(&fonts[index], word[i], scale, scale, &c_x1, &c_y1, &c_x2, &c_y2);
+
+        // 3. Force each character to center or align inside its own fixed column
+        unsigned int charXPosition = i * slotWidth;
+        
+        // Calculate the drawing dimensions
+        int width = c_x2 - c_x1;
+        int height = c_y2 - c_y1;
+
+        // Ensure we don't try to draw invisible/empty characters like spaces
+        if (width > 0 && height > 0) {
+            // Position the glyph inside its dedicated slot width
+            int byteOffset = charXPosition + ((ascent + c_y1) * b_w);
+            
+            stbtt_MakeCodepointBitmap(&fonts[index], bitmap + byteOffset, width, height, b_w, scale, scale, word[i]);
+        }
+    }
+
+    HammerCustomTexture* output = new HammerCustomTexture(engine, bitmap, b_w, b_h, HammerTextureFilter::Linear);
+
+    //stbi_write_png("font_atlas.png", b_w, b_h, 1, bitmap, b_w); // You can enable this for debug
+
+    free(bitmap); 
     return output;
 }
