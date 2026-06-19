@@ -24,10 +24,16 @@ Hammer supports for all major linux distro, windows (In testing) and chromebook 
 # What does Hammer support?
 
 Native Vulkan support: with a very optimized rendering pipeline
+
 SSBO (shader storage buffer object): enables you to send custom data to the GPU
+
 Simple collision detection: simple but useful
+
 Unlimited textures: many old engine had a hard limmit of how many textures you could you, Hammer does not have any
+
 Model loading (.obj only): makes it easier to load complex models
+
+Blazing fast text rendering: using stb_truetype.h and creating a texture of the text
 
 <img width="632" height="706" alt="image" src="https://github.com/user-attachments/assets/157a91fb-d69d-4deb-9de6-efdec45e3402" />
 <img width="1228" height="966" alt="image" src="https://github.com/user-attachments/assets/7d6a529a-c3ba-4a30-881c-aeba3b27118b" />
