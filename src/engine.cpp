@@ -490,6 +490,7 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 1, 1, &texture->descriptorSet, 0, nullptr);
         
+
         if (pipeline->ssbo != nullptr && pipeline->ssbo->getDescriptorSet() != VK_NULL_HANDLE) {
             VkDescriptorSet ssboDescriptorSet = pipeline->ssbo->getDescriptorSet(); // compiler was yapping too much
             vkCmdBindDescriptorSets(
@@ -503,6 +504,7 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
                 nullptr
             );
         }
+
 
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, position);

@@ -1,40 +1,34 @@
 # Hammer
-Hammer is an open source Engine using Vulkan as backend.
+Hammer is an open source engine using Vulkan as backend.
 It supports simple collision detection, model loading, there is an example of all features in the demo folder.
 
 [Showoff.webm](https://github.com/user-attachments/assets/d3d87ad2-bde6-4431-944c-7280afff7d88)
 
 # The goal of Hammer Engine
-The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5 can struggle with light tasks such as playing Doom 3, you need better software with a very optimize the rendering pipeline.
+The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5, even old games like Doom 3 (dhewm3) will struggle, this is why i made a vulkan engine with a very optimized rendering pipeline.
 
 # The performance of Hammer
 
-The #1 goal of Hammer is its performance on low-end machines. It out-performs many other engines while remaining compatible with as many machines as possible.
+The #1 goal of Hammer is performance on low-end machines. It out-performs many other engines while remaining compatible with many machines.
 
 # Cross-platform
 
-Hammer supports for all major linux distro, windows (In testing) and chromebook.
+Hammer supports for all major linux distro, windows (In testing) and chromebook via a emulation layer.
 
 # Upcoming features
-1. Point lights
-2. Directional lights
-3. More physics
-4. Text rendering
-5. Compute shaders
-6. SSBO support
-7. Multithreading support (recording command buffers on different cores, Help needed)
+1. Directional lights
+2. More physics
+3. Text rendering (in work now)
+4. Compute shaders
+5. Multithreading support (recording command buffers on different cores, Help needed)
 
 # What does Hammer support?
 
-Vulkan Native: Built from the ground up for modern hardware efficiency.
-
-Collision System: Includes a functional, simple collision detection system.
-
-Developer Friendly: Designed for rapid prototyping without sacrificing performance.
-
-Easy to load 3d models: Using tinyobjloader to load .obj files discards any vertex and index that is duplicated.
-
-Async logger: Print debugging stats to the terminal without slowing down the rendering pipeline.
+Native Vulkan support: with a very optimized rendering pipeline
+SSBO (shader storage buffer object): enables you to send custom data to the GPU
+Simple collision detection: simple but useful
+Unlimited textures: many old engine had a hard limmit of how many textures you could you, Hammer does not have any
+Model loading (.obj only): makes it easier to load complex models
 
 <img width="632" height="706" alt="image" src="https://github.com/user-attachments/assets/157a91fb-d69d-4deb-9de6-efdec45e3402" />
 <img width="1228" height="966" alt="image" src="https://github.com/user-attachments/assets/7d6a529a-c3ba-4a30-881c-aeba3b27118b" />
@@ -53,7 +47,7 @@ The official tutorial is at docs/
 
 2. The build will ask which demo you want to run, you can put the path to any demo in the demo folder.
 
-3. Run the demo and enjoy.
+3. Run the demo and give me a star.
 
 ## Windows & macOS
 
