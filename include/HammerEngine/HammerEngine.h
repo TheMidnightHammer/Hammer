@@ -33,6 +33,7 @@
 #include <condition_variable>
 
 #include "../../lib/tiny_obj_loader.h"
+#include "../../lib/stb_truetype.h"
 
 class HammerAsyncLogger {
 private:
@@ -87,6 +88,9 @@ struct Vertex {
 class HammerEngine;
 class HammerPipeline;
 class HammerSSBO;
+class HammerFont;
+class HammerTexture;
+class HammerCostumTexture;
 
 struct MeshPushConstants {
     glm::mat4 modelMatrix;
@@ -103,6 +107,45 @@ struct SwapChainSupportDetails {
     VkSurfaceCapabilitiesKHR capabilities;
     std::vector<VkSurfaceFormatKHR> formats;
     std::vector<VkPresentModeKHR> presentModes;
+};
+
+enum class HammerTextureFilter {
+    Nearest,
+    Linear
+};
+
+class HammerCustomTexture {
+public:
+    HammerCustomTexture(HammerEngine& Engine, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter);
+    ~HammerCustomTexture();
+
+    HammerCustomTexture(const HammerCustomTexture&) = delete;
+    HammerCustomTexture& operator=(const HammerCustomTexture&) = delete;
+
+    VkDescriptorSet descriptorSet = VK_NULL_HANDLE; 
+
+private:
+    VkImage image = VK_NULL_HANDLE;
+    VkDeviceMemory imageMemory = VK_NULL_HANDLE;
+    VkImageView imageView = VK_NULL_HANDLE;
+    VkSampler sampler = VK_NULL_HANDLE;
+
+    HammerEngine& engine;
+
+    void createTextureImage(unsigned char* pixels, uint32_t texWidth, uint32_t texHeight);
+    void createTextureSampler(HammerTextureFilter filter);
+    void allocateDescriptorSet(); 
+};
+
+class HammerFont {
+public:
+    HammerFont(HammerEngine& engine,const char* fontPath);
+    HammerCustomTexture* createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h);
+private:
+    stbtt_fontinfo* fonts = NULL;
+    unsigned short fontSize = 0;
+
+    HammerEngine& engine;
 };
 
 //i dont really undersand this shit
@@ -125,12 +168,6 @@ public:
     HammerModel(const std::string& path);
 };
 
-
-enum class HammerTextureFilter {
-    Nearest,
-    Linear
-};
-
 class HammerTexture {
 public:
     HammerTexture(HammerEngine& engine, const std::string& path, HammerTextureFilter filter);
@@ -150,7 +187,6 @@ private:
     HammerEngine& engine;
 
     void createTextureImage(const std::string& path);
-    void createTextureImageView();
     void createTextureSampler(HammerTextureFilter filter);
     void allocateDescriptorSet(); 
 };
@@ -309,6 +345,8 @@ public:
 
     void removeMeshRenderer(int index);
 
+    HammerMesh* CreateTextQuad(HammerEngine& engine, HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height);
+
     double currentTime = glfwGetTime();
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
 
@@ -427,8 +465,6 @@ public:
     bool hasStencilComponent(VkFormat format);
 
     void createTextureImage();
-
-    void createTextureImageView();
 
     void createTextureSampler();
 

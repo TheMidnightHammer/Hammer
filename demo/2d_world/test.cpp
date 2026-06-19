@@ -29,7 +29,7 @@ int main() {
     
     // Converted to raw pointers
     HammerPipeline* mainPipeline = new HammerPipeline(
-        Engine, vPath, fPath, 1, true, NULL
+        Engine, vPath, fPath, 1, true, nullptr
     );
 
     HammerTexture* mainTexture = new HammerTexture(
