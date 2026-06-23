@@ -18,6 +18,7 @@ set(SOURCE_FILES
     ../../src/AsyncLogger.cpp
     ../../src/fontTexture.cpp
     ../../src/texture.cpp
+    ../../src/fontHelper.cpp
 )
 
 find_package(Vulkan REQUIRED)

@@ -137,11 +137,129 @@ private:
     void allocateDescriptorSet(); 
 };
 
+struct Char {
+    std::vector<Vertex> vertices;
+    std::vector<uint32_t> indices;
+    char charName;
+};
+
 class HammerFont {
 public:
     HammerFont(HammerEngine& engine,const char* fontPath);
     HammerCustomTexture* createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
     HammerCustomTexture* createFontAtlasPtr(HammerEngine& engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
+
+    Char charCoor(int index, int totalChars, float xOffset, float yOffset, float charWidth, float charHeight, const char name);
+
+    void convertTextToVertexAndIndex(std::vector<Vertex>* verticesToAdd, std::vector<uint32_t>* indicesToAdd, std::string textToConvertToVertex);
+
+    Char space = charCoor(0, 95, 0, 0, 0.8f, 3.0f, ' ');
+    Char exclamation = charCoor(1, 95, 0, 0, 0.8f, 3.0f, '!');
+    Char double_quote = charCoor(2, 95, 0, 0, 0.8f, 3.0f, '"');
+    Char hash = charCoor(3, 95, 0, 0, 0.8f, 3.0f, '#');
+    Char dollar = charCoor(4, 95, 0, 0, 0.8f, 3.0f, '$');
+    Char percent = charCoor(5, 95, 0, 0, 0.8f, 3.0f, '%');
+    Char ampersand = charCoor(6, 95, 0, 0, 0.8f, 3.0f, '&');
+    Char single_quote = charCoor(7, 95, 0, 0, 0.8f, 3.0f, '\'');
+    Char open_paren = charCoor(8, 95, 0, 0, 0.8f, 3.0f, '(');
+    Char close_paren = charCoor(9, 95, 0, 0, 0.8f, 3.0f, ')');
+    Char asterisk = charCoor(10, 95, 0, 0, 0.8f, 3.0f, '*');
+    Char plus = charCoor(11, 95, 0, 0, 0.8f, 3.0f, '+');
+    Char comma = charCoor(12, 95, 0, 0, 0.8f, 3.0f, ',');
+    Char minus = charCoor(13, 95, 0, 0, 0.8f, 3.0f, '-');
+    Char period = charCoor(14, 95, 0, 0, 0.8f, 3.0f, '.');
+    Char slash = charCoor(15, 95, 0, 0, 0.8f, 3.0f, '/');
+    Char num_0 = charCoor(16, 95, 0, 0, 0.8f, 3.0f, '0');
+    Char num_1 = charCoor(17, 95, 0, 0, 0.8f, 3.0f, '1');
+    Char num_2 = charCoor(18, 95, 0, 0, 0.8f, 3.0f, '2');
+    Char num_3 = charCoor(19, 95, 0, 0, 0.8f, 3.0f, '3');
+    Char num_4 = charCoor(20, 95, 0, 0, 0.8f, 3.0f, '4');
+    Char num_5 = charCoor(21, 95, 0, 0, 0.8f, 3.0f, '5');
+    Char num_6 = charCoor(22, 95, 0, 0, 0.8f, 3.0f, '6');
+    Char num_7 = charCoor(23, 95, 0, 0, 0.8f, 3.0f, '7');
+    Char num_8 = charCoor(24, 95, 0, 0, 0.8f, 3.0f, '8');
+    Char num_9 = charCoor(25, 95, 0, 0, 0.8f, 3.0f, '9');
+    Char colon = charCoor(26, 95, 0, 0, 0.8f, 3.0f, ':');
+    Char semicolon = charCoor(27, 95, 0, 0, 0.8f, 3.0f, ';');
+    Char less_than = charCoor(28, 95, 0, 0, 0.8f, 3.0f, '<');
+    Char equal = charCoor(29, 95, 0, 0, 0.8f, 3.0f, '=');
+    Char greater_than = charCoor(30, 95, 0, 0, 0.8f, 3.0f, '>');
+    Char question_mark = charCoor(31, 95, 0, 0, 0.8f, 3.0f, '?');
+    Char at = charCoor(32, 95, 0, 0, 0.8f, 3.0f, '@');
+    Char A = charCoor(33, 95, 0, 0, 0.8f, 3.0f, 'A');
+    Char B = charCoor(34, 95, 0, 0, 0.8f, 3.0f, 'B');
+    Char C = charCoor(35, 95, 0, 0, 0.8f, 3.0f, 'C');
+    Char D = charCoor(36, 95, 0, 0, 0.8f, 3.0f, 'D');
+    Char E = charCoor(37, 95, 0, 0, 0.8f, 3.0f, 'E');
+    Char F = charCoor(38, 95, 0, 0, 0.8f, 3.0f, 'F');
+    Char G = charCoor(39, 95, 0, 0, 0.8f, 3.0f, 'G');
+    Char H = charCoor(40, 95, 0, 0, 0.8f, 3.0f, 'H');
+    Char I = charCoor(41, 95, 0, 0, 0.8f, 3.0f, 'I');
+    Char J = charCoor(42, 95, 0, 0, 0.8f, 3.0f, 'J');
+    Char K = charCoor(43, 95, 0, 0, 0.8f, 3.0f, 'K');
+    Char L = charCoor(44, 95, 0, 0, 0.8f, 3.0f, 'L');
+    Char M = charCoor(45, 95, 0, 0, 0.8f, 3.0f, 'M');
+    Char N = charCoor(46, 95, 0, 0, 0.8f, 3.0f, 'N');
+    Char O = charCoor(47, 95, 0, 0, 0.8f, 3.0f, 'O');
+    Char P = charCoor(48, 95, 0, 0, 0.8f, 3.0f, 'P');
+    Char Q = charCoor(49, 95, 0, 0, 0.8f, 3.0f, 'Q');
+    Char R = charCoor(50, 95, 0, 0, 0.8f, 3.0f, 'R');
+    Char S = charCoor(51, 95, 0, 0, 0.8f, 3.0f, 'S');
+    Char T = charCoor(52, 95, 0, 0, 0.8f, 3.0f, 'T');
+    Char U = charCoor(53, 95, 0, 0, 0.8f, 3.0f, 'U');
+    Char V = charCoor(54, 95, 0, 0, 0.8f, 3.0f, 'V');
+    Char W = charCoor(55, 95, 0, 0, 0.8f, 3.0f, 'W');
+    Char X = charCoor(56, 95, 0, 0, 0.8f, 3.0f, 'X');
+    Char Y = charCoor(57, 95, 0, 0, 0.8f, 3.0f, 'Y');
+    Char Z = charCoor(58, 95, 0, 0, 0.8f, 3.0f, 'Z');
+    Char open_bracket = charCoor(59, 95, 0, 0, 0.8f, 3.0f, '[');
+    Char backslash = charCoor(60, 95, 0, 0, 0.8f, 3.0f, '\\');
+    Char close_bracket = charCoor(61, 95, 0, 0, 0.8f, 3.0f, ']');
+    Char caret = charCoor(62, 95, 0, 0, 0.8f, 3.0f, '^');
+    Char underscore = charCoor(63, 95, 0, 0, 0.8f, 3.0f, '_');
+    Char backtick = charCoor(64, 95, 0, 0, 0.8f, 3.0f, '`');
+    Char a = charCoor(65, 95, 0, 0, 0.8f, 3.0f, 'a');
+    Char b = charCoor(66, 95, 0, 0, 0.8f, 3.0f, 'b');
+    Char c = charCoor(67, 95, 0, 0, 0.8f, 3.0f, 'c');
+    Char d = charCoor(68, 95, 0, 0, 0.8f, 3.0f, 'd');
+    Char e = charCoor(69, 95, 0, 0, 0.8f, 3.0f, 'e');
+    Char f = charCoor(70, 95, 0, 0, 0.8f, 3.0f, 'f');
+    Char g = charCoor(71, 95, 0, 0, 0.8f, 3.0f, 'g');
+    Char h = charCoor(72, 95, 0, 0, 0.8f, 3.0f, 'h');
+    Char i = charCoor(73, 95, 0, 0, 0.8f, 3.0f, 'i');
+    Char j = charCoor(74, 95, 0, 0, 0.8f, 3.0f, 'j');
+    Char k = charCoor(75, 95, 0, 0, 0.8f, 3.0f, 'k');
+    Char l = charCoor(76, 95, 0, 0, 0.8f, 3.0f, 'l');
+    Char m = charCoor(77, 95, 0, 0, 0.8f, 3.0f, 'm');
+    Char n = charCoor(78, 95, 0, 0, 0.8f, 3.0f, 'n');
+    Char o = charCoor(79, 95, 0, 0, 0.8f, 3.0f, 'o');
+    Char p = charCoor(80, 95, 0, 0, 0.8f, 3.0f, 'p');
+    Char q = charCoor(81, 95, 0, 0, 0.8f, 3.0f, 'q');
+    Char r = charCoor(82, 95, 0, 0, 0.8f, 3.0f, 'r');
+    Char s = charCoor(83, 95, 0, 0, 0.8f, 3.0f, 's');
+    Char t = charCoor(84, 95, 0, 0, 0.8f, 3.0f, 't');
+    Char u = charCoor(85, 95, 0, 0, 0.8f, 3.0f, 'u');
+    Char v = charCoor(86, 95, 0, 0, 0.8f, 3.0f, 'v');
+    Char w = charCoor(87, 95, 0, 0, 0.8f, 3.0f, 'w');
+    Char x = charCoor(88, 95, 0, 0, 0.8f, 3.0f, 'x');
+    Char y = charCoor(89, 95, 0, 0, 0.8f, 3.0f, 'y');
+    Char z = charCoor(90, 95, 0, 0, 0.8f, 3.0f, 'z');
+    Char open_brace = charCoor(91, 95, 0, 0, 0.8f, 3.0f, '{');
+    Char pipe = charCoor(92, 95, 0, 0, 0.8f, 3.0f, '|');
+    Char close_brace = charCoor(93, 95, 0, 0, 0.8f, 3.0f, '}');
+    Char tilde = charCoor(94, 95, 0, 0, 0.8f, 3.0f, '~');
+
+    std::vector<Char> allCharVectors = {
+        space, exclamation, double_quote, hash, dollar, percent, ampersand, single_quote,
+        open_paren, close_paren, asterisk, plus, comma, minus, period, slash,
+        num_0, num_1, num_2, num_3, num_4, num_5, num_6, num_7, num_8, num_9,
+        colon, semicolon, less_than, equal, greater_than, question_mark, at,
+        A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V, W, X, Y, Z,
+        open_bracket, backslash, close_bracket, caret, underscore, backtick,
+        a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s, t, u, v, w, x, y, z,
+        open_brace, pipe, close_brace, tilde
+    };
+
 private:
     stbtt_fontinfo* fonts = NULL;
     unsigned short fontSize = 0;
