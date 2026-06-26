@@ -26,7 +26,6 @@ int main() {
     Engine.initWindow();
     Engine.initVulkan();
 
-    // 1. Load the Texture explicitly using raw pointer
     HammerTexture* mainTexture = new HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);
 
     std::vector<Vertex> localVertices = {
@@ -76,12 +75,10 @@ int main() {
         20, 21, 22, 22, 23, 20  // Left
     };
 
-    // 2. Setup Pipeline using raw pointer
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
     HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, nullptr);
 
-    // 3. Create Mesh and store in Engine
     HammerMesh* sceneMesh = new HammerMesh(
         Engine, 
         mainPipeline, 
@@ -114,7 +111,6 @@ int main() {
     }
     Engine.drawPassEnd();
 
-    // 4. Cleanup
     delete mainTexture;
     delete mainPipeline;
     

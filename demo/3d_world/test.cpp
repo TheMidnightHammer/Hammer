@@ -12,51 +12,51 @@
 static const Vertex faceVertices[6][4] = {
     // Top face (+Y)
     {
-        {{-0.5f, 0.5f,-0.5f},{1.0f,0.0f,0.0f},{0.1250f,0.0625f}},
-        {{ 0.5f, 0.5f,-0.5f},{0.0f,1.0f,0.0f},{0.1875f,0.0625f}},
-        {{ 0.5f, 0.5f, 0.5f},{0.0f,0.0f,1.0f},{0.1875f,0.0000f}},
-        {{-0.5f, 0.5f, 0.5f},{1.0f,1.0f,0.0f},{0.1250f,0.0000f}}
+        {{-0.5f, 0.5f,-0.5f},{1.0f,0.0f,0.0f},{0.1250f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f, 0.5f,-0.5f},{0.0f,1.0f,0.0f},{0.1875f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f, 0.5f, 0.5f},{0.0f,0.0f,1.0f},{0.1875f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{-0.5f, 0.5f, 0.5f},{1.0f,1.0f,0.0f},{0.1250f,0.0000f},{1.0f,0.0f,0.0f}}
     },
     // Bottom face (-Y)
     {
-        {{-0.5f,-0.5f,-0.5f},{1.0f,0.0f,1.0f},{0.0625f,0.0625f}},
-        {{ 0.5f,-0.5f,-0.5f},{0.0f,1.0f,1.0f},{0.1250f,0.0625f}},
-        {{ 0.5f,-0.5f, 0.5f},{0.5f,0.5f,0.5f},{0.1250f,0.0000f}},
-        {{-0.5f,-0.5f, 0.5f},{0.0f,0.0f,0.0f},{0.0625f,0.0000f}}
+        {{-0.5f,-0.5f,-0.5f},{1.0f,0.0f,1.0f},{0.0625f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f,-0.5f,-0.5f},{0.0f,1.0f,1.0f},{0.1250f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f,-0.5f, 0.5f},{0.5f,0.5f,0.5f},{0.1250f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{-0.5f,-0.5f, 0.5f},{0.0f,0.0f,0.0f},{0.0625f,0.0000f},{1.0f,0.0f,0.0f}}
     },
     // Right face (+X)
     {
-        {{ 0.5f,-0.5f,-0.5f},{1.0f,0.5f,0.0f},{0.0625f,0.0625f}},
-        {{ 0.5f, 0.5f,-0.5f},{0.5f,1.0f,0.0f},{0.0625f,0.0000f}},
-        {{ 0.5f, 0.5f, 0.5f},{0.0f,1.0f,0.5f},{0.0000f,0.0000f}},
-        {{ 0.5f,-0.5f, 0.5f},{0.5f,0.0f,1.0f},{0.0000f,0.0625f}}
+        {{ 0.5f,-0.5f,-0.5f},{1.0f,0.5f,0.0f},{0.0625f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f, 0.5f,-0.5f},{0.5f,1.0f,0.0f},{0.0625f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f, 0.5f, 0.5f},{0.0f,1.0f,0.5f},{0.0000f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f,-0.5f, 0.5f},{0.5f,0.0f,1.0f},{0.0000f,0.0625f},{1.0f,0.0f,0.0f}}
     },
     // Left face (-X)
     {
-        {{-0.5f,-0.5f,-0.5f},{0.5f,0.0f,0.5f},{0.0625f,0.0625f}},
-        {{-0.5f, 0.5f,-0.5f},{0.5f,0.5f,0.0f},{0.0625f,0.0000f}},
-        {{-0.5f, 0.5f, 0.5f},{0.0f,0.5f,0.5f},{0.0000f,0.0000f}},
-        {{-0.5f,-0.5f, 0.5f},{0.0f,0.0f,0.5f},{0.0000f,0.0625f}}
+        {{-0.5f,-0.5f,-0.5f},{0.5f,0.0f,0.5f},{0.0625f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{-0.5f, 0.5f,-0.5f},{0.5f,0.5f,0.0f},{0.0625f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{-0.5f, 0.5f, 0.5f},{0.0f,0.5f,0.5f},{0.0000f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{-0.5f,-0.5f, 0.5f},{0.0f,0.0f,0.5f},{0.0000f,0.0625f},{1.0f,0.0f,0.0f}}
     },
     // Front face (+Z)
     {
-        {{-0.5f,-0.5f, 0.5f},{1.0f,0.0f,0.0f},{0.0000f,0.0625f}},
-        {{ 0.5f,-0.5f, 0.5f},{0.0f,1.0f,0.0f},{0.0625f,0.0625f}},
-        {{ 0.5f, 0.5f, 0.5f},{0.0f,0.0f,1.0f},{0.0625f,0.0000f}},
-        {{-0.5f, 0.5f, 0.5f},{1.0f,1.0f,0.0f},{0.0000f,0.0000f}}
+        {{-0.5f,-0.5f, 0.5f},{1.0f,0.0f,0.0f},{0.0000f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f,-0.5f, 0.5f},{0.0f,1.0f,0.0f},{0.0625f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f, 0.5f, 0.5f},{0.0f,0.0f,1.0f},{0.0625f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{-0.5f, 0.5f, 0.5f},{1.0f,1.0f,0.0f},{0.0000f,0.0000f},{1.0f,0.0f,0.0f}}
     },
     // Back face (-Z)
     {
-        {{-0.5f,-0.5f,-0.5f},{1.0f,0.0f,1.0f},{0.0000f,0.0625f}},
-        {{ 0.5f,-0.5f,-0.5f},{0.0f,1.0f,1.0f},{0.0625f,0.0625f}},
-        {{ 0.5f, 0.5f,-0.5f},{0.5f,0.5f,0.5f},{0.0625f,0.0000f}},
-        {{-0.5f, 0.5f,-0.5f},{0.0f,0.0f,0.0f},{0.0000f,0.0000f}}
+        {{-0.5f,-0.5f,-0.5f},{1.0f,0.0f,1.0f},{0.0000f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f,-0.5f,-0.5f},{0.0f,1.0f,1.0f},{0.0625f,0.0625f},{1.0f,0.0f,0.0f}},
+        {{ 0.5f, 0.5f,-0.5f},{0.5f,0.5f,0.5f},{0.0625f,0.0000f},{1.0f,0.0f,0.0f}},
+        {{-0.5f, 0.5f,-0.5f},{0.0f,0.0f,0.0f},{0.0000f,0.0000f},{1.0f,0.0f,0.0f}}
     }
 };
 
 static const uint32_t faceIndicesPattern[] = { 0, 1, 2, 2, 3, 0 };
 
-void generateCubeGrid(std::vector<Vertex>& outVertices, std::vector<uint32_t>& outIndices, int width, int height, int depth) {
+void generateCubeGrid(std::vector<Vertex>* outVertices, std::vector<uint32_t>* outIndices, int width, int height, int depth) {
     uint32_t vertexOffset = 0;
     for (int x = 0; x < width; ++x) {
         for (int y = 0; y < height; ++y) {
@@ -66,10 +66,10 @@ void generateCubeGrid(std::vector<Vertex>& outVertices, std::vector<uint32_t>& o
                     for (int i = 0; i < 4; ++i) {
                         Vertex v = faceVertices[face][i];
                         v.pos += worldPos;
-                        outVertices.push_back(v);
+                        outVertices->push_back(v);
                     }
                     for (int i = 0; i < 6; ++i) {
-                        outIndices.push_back(faceIndicesPattern[i] + vertexOffset);
+                        outIndices->push_back(faceIndicesPattern[i] + vertexOffset);
                     }
                     vertexOffset += 4;
                 }
@@ -107,7 +107,7 @@ int main() {
 
     std::vector<Vertex> vertices;
     std::vector<uint32_t> indices;
-    generateCubeGrid(vertices, indices, 10, 10, 10);
+    generateCubeGrid(&vertices, &indices, 10, 10, 10);
 
     // Allocate raw pointer for mesh and add to engine vector
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, dirtTexture, vertices, indices);
