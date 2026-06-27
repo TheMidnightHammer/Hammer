@@ -18,7 +18,7 @@ int main() {
     Engine.WindowHeight = 900;
     Engine.MaxTextures = 1000; 
     Engine.windowName = "Hammer Engine - Collision Demo";
-    Engine.mouseLock = 1;
+    Engine.mouseLock = true;
     Engine.cameraSpeed = 0.1f;
     Engine.renderDistance = 64.0f;
     Engine.cameraPosition = glm::vec3(0, 5, 0);

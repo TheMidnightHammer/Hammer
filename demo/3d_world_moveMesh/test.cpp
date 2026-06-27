@@ -56,7 +56,7 @@ int main() {
     Engine.WindowWidth = 1200;
     Engine.WindowHeight = 900;
     Engine.MaxTextures = 1000;
-    Engine.mouseLock = 1; 
+    Engine.mouseLock = true; 
     Engine.windowName = "Hammer Engine - 3D Texture World";
     Engine.renderDistance = 1000.0f;
     Engine.cameraSpeed = 2.5f;

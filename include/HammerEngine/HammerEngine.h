@@ -428,15 +428,19 @@ public:
 
     GLFWwindow* window; // GLFW window
 
+    GLFWmonitor* targetMonitor = nullptr;
+
     std::string windowName = "Hammer Engine";
 
     void runTest();
 
-    int mouseLock = 1;
+    bool mouseLock = false;
 
     float renderDistance = 512.0f; // how fare the camera can see, bigger the numbre bigger the buffers more memory needed
 
     float cameraFallSpeed = 0.01; // how fast the camera falls in gravaty enabled.
+
+    bool fullscreen = false;
 
     void setMaxVertciesIndicesSize(VkDeviceSize maxsize); // giving the maximume size that the vertcies and incices can go to.
 

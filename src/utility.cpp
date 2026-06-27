@@ -18,30 +18,27 @@ void HammerEngine::runTest() {
 }
 
 void HammerEngine::initWindow() {
+    glfwInit();
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    if(mouseLock == 1){
-        glfwInit();
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-        window = glfwCreateWindow(WindowWidth, WindowHeight, windowName.c_str(), nullptr, nullptr);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, HammerEngine::framebufferResizeCallback);
-
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-        glfwMakeContextCurrent(window);
-    } else if(mouseLock == 0){
-        glfwInit();
-
-        glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-        window = glfwCreateWindow(WindowWidth, WindowHeight, windowName.c_str(), nullptr, nullptr);
-        glfwSetWindowUserPointer(window, this);
-        glfwSetFramebufferSizeCallback(window, HammerEngine::framebufferResizeCallback);
-
-        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-        glfwMakeContextCurrent(window);
+    if(fullscreen){
+        targetMonitor = glfwGetPrimaryMonitor(); 
+    } else {
+        targetMonitor = nullptr; 
     }
+    
+    window = glfwCreateWindow(WindowWidth, WindowHeight, windowName.c_str(), targetMonitor, nullptr);
+    
+    glfwSetWindowUserPointer(window, this);
+    glfwSetFramebufferSizeCallback(window, HammerEngine::framebufferResizeCallback);
+
+    if (mouseLock) {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    } else {
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+    
+    // glfwMakeContextCurrent(window) this is a opengl command and i was calling this in vulkan, yikks
 }
 
 void HammerEngine::drawPassEnd(){

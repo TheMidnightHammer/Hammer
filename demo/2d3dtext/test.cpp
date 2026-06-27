@@ -17,7 +17,7 @@ int main() {
     engine.WindowHeight = 1000;
     engine.windowName = "Hammer engine - 2D Texture Demo";
     engine.MaxTextures = 1000;
-    engine.mouseLock = 0;
+    engine.mouseLock = false;
     engine.cameraSpeed = 0.1f;
     engine.renderDistance = 16.0f;
 

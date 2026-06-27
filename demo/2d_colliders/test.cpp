@@ -20,7 +20,7 @@ int main() {
     Engine.MaxTextures = 1000;
     Engine.cameraPosition = glm::vec3(0, 0, 2);
     Engine.windowName = "Hammer Engine - Sprite Movement";
-    Engine.mouseLock = 0;
+    Engine.mouseLock = false;
     Engine.cameraSpeed = 0.1f;
     Engine.renderDistance = 16.0f;
     Engine.setMaxVertciesIndicesSize(1024 * 1024);
