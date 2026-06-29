@@ -410,8 +410,6 @@ public:
 
     bool enableValidationLayers;
 
-    void addMeshRenderer(HammerMesh* mesh);
-
     float yaw = -90.0f; // Horizontal angle
     float pitch = 0.0f; // Vertical angle
     float cameraSpeed = 0.01f; // Speed of movement
@@ -441,6 +439,12 @@ public:
     float cameraFallSpeed = 0.01; // how fast the camera falls in gravaty enabled.
 
     bool fullscreen = false;
+
+    int FPS = 0;
+
+    void InitImgui();
+
+    void addMeshRenderer(HammerMesh* mesh);
 
     void setMaxVertciesIndicesSize(VkDeviceSize maxsize); // giving the maximume size that the vertcies and incices can go to.
 
@@ -525,14 +529,14 @@ public:
 	VkDescriptorPool descriptorPool;
 	std::vector<VkDescriptorSet> descriptorSets;
 
+    VkDescriptorPool imguiPool;
+
 	std::vector<VkCommandBuffer> commandBuffers;
 
 	std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
 	std::vector<VkFence> inFlightFences;
 	uint32_t currentFrame = 0;
-
-
 
     double previousTime = glfwGetTime();
     int frameCount = 0;

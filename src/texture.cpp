@@ -59,6 +59,8 @@ void HammerCustomTexture::createTextureImage(unsigned char* pixels, uint32_t tex
     engine.transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
+    vkQueueWaitIdle(engine.graphicsQueue);
+
     vkDestroyBuffer(engine.device, stagingBuffer, nullptr);
     vkFreeMemory(engine.device, stagingBufferMemory, nullptr);
 }

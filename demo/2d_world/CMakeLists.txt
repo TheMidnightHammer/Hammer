@@ -20,15 +20,25 @@ set(SOURCE_FILES
     ../../src/fontTexture.cpp
     ../../src/texture.cpp
     ../../src/fontHelper.cpp
+    # Imgui source files
+    ../../lib/imgui/imgui.cpp
+    ../../lib/imgui/imgui_demo.cpp
+    ../../lib/imgui/imgui_draw.cpp
+    ../../lib/imgui/imgui_tables.cpp
+    ../../lib/imgui/imgui_widgets.cpp
+    ../../lib/imgui/imgui_impl_glfw.cpp
+    ../../lib/imgui/imgui_impl_vulkan.cpp
 )
 
 find_package(Vulkan REQUIRED)
-find_package(glm CONFIG REQUIRED) # Standard for most package managers
+find_package(glm CONFIG REQUIRED) 
 find_package(glfw3 REQUIRED)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
 target_compile_definitions(voxel_Engine PUBLIC GLM_ENABLE_EXPERIMENTAL)
+
+target_include_directories(voxel_Engine PRIVATE ../../lib/imgui)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE

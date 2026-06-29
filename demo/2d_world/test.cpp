@@ -5,6 +5,9 @@
  */
 
 #include "../../include/HammerEngine/HammerEngine.h"
+#include "../../lib/imgui/imgui.h"
+#include "../../lib/imgui/imgui_impl_glfw.h"
+#include "../../lib/imgui/imgui_impl_vulkan.h"
 #include <vector>
 #include <string>
 #include <glm/glm.hpp>
@@ -23,6 +26,7 @@ int main() {
 
     Engine.initWindow();
     Engine.initVulkan();
+    Engine.InitImgui();
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
@@ -37,10 +41,10 @@ int main() {
     );
 
     std::vector<Vertex> localVertices = {
-        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0000f, 0.0625f}},
-        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0625f, 0.0625f}},
-        {{ 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0625f, 0.0000f}},
-        {{-0.5f,  0.5f, 0.0f}, {1.0f, 1.0f, 0.0f}, {0.0000f, 0.0000f}},
+        {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0000f, 0.0625f}, {1.0f, 0.0f, 0.0f}},
+        {{ 0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {0.0625f, 0.0625f}, {1.0f, 0.0f, 0.0f}},
+        {{ 0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {0.0625f, 0.0000f}, {1.0f, 0.0f, 0.0f}},
+        {{-0.5f,  0.5f, 0.0f}, {1.0f, 1.0f, 0.0f}, {0.0000f, 0.0000f}, {1.0f, 0.0f, 0.0f}},
     };
 
     std::vector<uint32_t> localIndices = {
@@ -63,6 +67,22 @@ int main() {
         Engine.updateFrameTimeStart();
 
         Engine.updateCameraDefault2D();
+
+        ImGui_ImplVulkan_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
+
+        ImGui::Begin("hammer is framework now, blah blah blah");
+        ImGui::Text("heheh do wahtever u want >:}");
+        std::string temp_str = "FPS: " + std::to_string(Engine.FPS);
+    
+        const char* c_str = temp_str.c_str();
+
+        ImGui::Text("%s", c_str);
+        ImGui::End();
+        
+
+        ImGui::Render();
         
         Engine.drawFrame();
 

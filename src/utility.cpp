@@ -69,8 +69,7 @@ void HammerEngine::updateFrameTimeEnd(){
     if (currentTime - previousTime >= 1.0) {
         double averageFrameTime = totalFrameTime.count() / static_cast<double>(frameCount);
 
-        std::cout << "FPS: " << frameCount 
-                  << " | Avg Frame Time: " << averageFrameTime << " ms\n";
+        FPS = frameCount;
 
         frameCount = 0;
         previousTime = currentTime;
