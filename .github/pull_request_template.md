@@ -1,5 +1,5 @@
 # Hammer Engine Pull Request
-
+## # Was AI used in anyway in this code?
 ## # How does this benefit Hammer?
 ## # Was this requested?
 ## # Does it compile and run as expected?
