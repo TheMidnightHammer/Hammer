@@ -168,6 +168,7 @@ void HammerEngine::mouseCallback(double xpos, double ypos) {
 }
 
 void HammerEngine::InitImgui() {
+    useImGui = true;
     VkDescriptorPoolSize pool_sizes[] = {
         { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },
         { VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, 1000 },
@@ -254,11 +255,13 @@ void HammerEngine::cleanup() {
     }
     meshs.clear();
 
-    ImGui_ImplVulkan_Shutdown();
-    ImGui_ImplGlfw_Shutdown();
-    ImGui::DestroyContext();
+    if(useImGui){
+        ImGui_ImplVulkan_Shutdown();
+        ImGui_ImplGlfw_Shutdown();
+        ImGui::DestroyContext();
 
-    vkDestroyDescriptorPool(device, imguiPool, nullptr);
+        vkDestroyDescriptorPool(device, imguiPool, nullptr);
+    }
 
     cleanupSwapChain();
 
@@ -1353,11 +1356,12 @@ void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
 
             mesh->bindAndDraw(commandBuffer, currentFrame);
         }
-
-        ImDrawData* drawData = ImGui::GetDrawData();
-        if (drawData) {
-            ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer);
-        }
+	if(useImGui){
+            ImDrawData* drawData = ImGui::GetDrawData();
+            if (drawData) {
+                ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer);
+            }
+	}
 
     vkCmdEndRenderPass(commandBuffer);
 

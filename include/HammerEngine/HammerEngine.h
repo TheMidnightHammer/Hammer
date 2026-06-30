@@ -442,6 +442,8 @@ public:
 
     int FPS = 0;
 
+    bool useImGui = false;
+
     void InitImgui();
 
     void addMeshRenderer(HammerMesh* mesh);
