@@ -13,7 +13,7 @@ The #1 goal of Hammer is performance on low-end machines. It out-performs many o
 
 # Cross-platform
 
-Hammer supports for all major linux distro, windows (In testing) and chromebook via a emulation layer.
+Hammer supports for all major linux distro, windows (In testing) and chromebook via an emulation layer.
 
 # Upcoming features
 1. Directional lights
