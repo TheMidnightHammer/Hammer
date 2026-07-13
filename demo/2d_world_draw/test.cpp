@@ -10,17 +10,49 @@
 #include <string>
 #include <glm/glm.hpp>
 
+std::array<VkVertexInputAttributeDescription, 4> Vertex::getAttributeDescriptions() {
+    std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
+
+    // 0: Position
+    attributeDescriptions[0].binding = 0;
+    attributeDescriptions[0].location = 0;
+    attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+    // 1: Color
+    attributeDescriptions[1].binding = 0;
+    attributeDescriptions[1].location = 1;
+    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+    // 2: TexCoord
+    attributeDescriptions[2].binding = 0;
+    attributeDescriptions[2].location = 2;
+    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+    // 3: Normal
+    attributeDescriptions[3].binding = 0;
+    attributeDescriptions[3].location = 3;
+    attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[3].offset = offsetof(Vertex, normal);
+
+    return attributeDescriptions;
+}
+
+
 int main() {
     HammerEngine Engine;
 
     Engine.enableValidationLayers = true;
-    Engine.WindowWidth = 1000;
-    Engine.WindowHeight = 1000;
+    Engine.windowWidth = 1000;
+    Engine.windowHeight = 1000;
     Engine.windowName = "Hammer Engine - 2D Texture Demo";
     Engine.MaxTextures = 1000;
     Engine.mouseLock = false;
     Engine.cameraSpeed = 0.1f;
     Engine.renderDistance = 16.0f;
+    Engine.setMaxBufferSize(1024*1024*16); // 16 mb of staging size
 
     Engine.initWindow();
     Engine.initVulkan();

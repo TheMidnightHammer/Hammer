@@ -10,6 +10,11 @@
 #include <cstdlib>
 #include <cstdint>
 
+void HammerEngine::setMaxBufferSize(VkDeviceSize size) {
+    stagingBufferSize = size;
+    stagingBuffer2Size = size;
+}
+
 
 void HammerEngine::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();

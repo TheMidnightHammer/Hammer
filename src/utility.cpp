@@ -10,13 +10,6 @@
 
 using namespace std;
 
-void HammerEngine::runTest() {
-    initWindow();
-    initVulkan();
-    mainLoopTest();
-    cleanup();
-}
-
 void HammerEngine::initWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -27,7 +20,7 @@ void HammerEngine::initWindow() {
         targetMonitor = nullptr; 
     }
     
-    window = glfwCreateWindow(WindowWidth, WindowHeight, windowName.c_str(), targetMonitor, nullptr);
+    window = glfwCreateWindow(windowWidth, windowHeight, windowName.c_str(), targetMonitor, nullptr);
     
     glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, HammerEngine::framebufferResizeCallback);
@@ -90,9 +83,4 @@ void HammerEngine::updateFrameTimeStart(){
     currentTime = glfwGetTime();
     frameCount++;
     glfwPollEvents();
-}
-
-void HammerEngine::setMaxVertciesIndicesSize(VkDeviceSize maxsize){
-    stagingBufferSize = maxsize;
-    stagingBuffer2Size = maxsize;
 }

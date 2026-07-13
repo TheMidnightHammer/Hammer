@@ -11,10 +11,10 @@ HammerSSBO::HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size
 
 HammerSSBO::~HammerSSBO() {
     if (buffer != VK_NULL_HANDLE) {
-        vkDestroyBuffer(engine->device, buffer, nullptr);
+        vkDestroyBuffer(engine->getDevice(), buffer, nullptr);
     }
     if (bufferMemory != VK_NULL_HANDLE) {
-        vkFreeMemory(engine->device, bufferMemory, nullptr);
+        vkFreeMemory(engine->getDevice(), bufferMemory, nullptr);
     }
 }
 
@@ -27,10 +27,10 @@ void HammerSSBO::updateData(const void* newData, VkDeviceSize newSize) {
 
     if (bufferSize < newSize) {
         if (buffer != VK_NULL_HANDLE) {
-            vkDestroyBuffer(engine->device, buffer, nullptr);
+            vkDestroyBuffer(engine->getDevice(), buffer, nullptr);
         }
         if (bufferMemory != VK_NULL_HANDLE) {
-            vkFreeMemory(engine->device, bufferMemory, nullptr);
+            vkFreeMemory(engine->getDevice(), bufferMemory, nullptr);
         }
         bufferSize = newSize;
 
@@ -49,14 +49,14 @@ void HammerSSBO::updateData(const void* newData, VkDeviceSize newSize) {
         descriptorWrite.descriptorCount = 1;
         descriptorWrite.pBufferInfo = &bufferInfo;
 
-        vkUpdateDescriptorSets(engine->device, 1, &descriptorWrite, 0, nullptr);
+        vkUpdateDescriptorSets(engine->getDevice(), 1, &descriptorWrite, 0, nullptr);
 
     } else {
         
         void* mappedData;
-        vkMapMemory(engine->device, bufferMemory, 0, newSize, 0, &mappedData);
+        vkMapMemory(engine->getDevice(), bufferMemory, 0, newSize, 0, &mappedData);
         memcpy(mappedData, newData, static_cast<size_t>(newSize));
-        vkUnmapMemory(engine->device, bufferMemory);
+        vkUnmapMemory(engine->getDevice(), bufferMemory);
     }
 }
 
@@ -67,12 +67,12 @@ void HammerSSBO::createStorageBuffer(const void* data) {
     bufferInfo.usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
     bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateBuffer(engine->device, &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
+    if (vkCreateBuffer(engine->getDevice(), &bufferInfo, nullptr, &buffer) != VK_SUCCESS) {
         throw std::runtime_error("Failed to create storage buffer!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetBufferMemoryRequirements(engine->device, buffer, &memRequirements);
+    vkGetBufferMemoryRequirements(engine->getDevice(), buffer, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
@@ -82,17 +82,17 @@ void HammerSSBO::createStorageBuffer(const void* data) {
         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT
     );
 
-    if (vkAllocateMemory(engine->device, &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
+    if (vkAllocateMemory(engine->getDevice(), &allocInfo, nullptr, &bufferMemory) != VK_SUCCESS) {
         throw std::runtime_error("Failed to allocate storage buffer memory!");
     }
 
-    vkBindBufferMemory(engine->device, buffer, bufferMemory, 0);
+    vkBindBufferMemory(engine->getDevice(), buffer, bufferMemory, 0);
 
     if (data != nullptr) {
         void* mappedData;
-        vkMapMemory(engine->device, bufferMemory, 0, bufferSize, 0, &mappedData);
+        vkMapMemory(engine->getDevice(), bufferMemory, 0, bufferSize, 0, &mappedData);
         memcpy(mappedData, data, static_cast<size_t>(bufferSize));
-        vkUnmapMemory(engine->device, bufferMemory);
+        vkUnmapMemory(engine->getDevice(), bufferMemory);
     } else {
         throw std::runtime_error("ERROR: trying to create a shader storage buffer object without any data, data is nullptr\n");
     }
@@ -102,11 +102,12 @@ void HammerSSBO::allocateAndWriteDescriptorSet() {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     // Accessing engine fields directly:
-    allocInfo.descriptorPool = engine->descriptorPool; 
+    allocInfo.descriptorPool = engine->getDescriptorPool(); 
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &engine->ssboSetLayout;
+    VkDescriptorSetLayout temp = engine->getSsboSetLayout();
+    allocInfo.pSetLayouts = &temp;
 
-    if (vkAllocateDescriptorSets(engine->device, &allocInfo, &SsboDescriptorSet) != VK_SUCCESS) {
+    if (vkAllocateDescriptorSets(engine->getDevice(), &allocInfo, &SsboDescriptorSet) != VK_SUCCESS) {
         throw std::runtime_error("Failed to allocate SSBO descriptor set!");
     }
 
@@ -124,5 +125,5 @@ void HammerSSBO::allocateAndWriteDescriptorSet() {
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pBufferInfo = &bufferInfo;
 
-    vkUpdateDescriptorSets(engine->device, 1, &descriptorWrite, 0, nullptr);
+    vkUpdateDescriptorSets(engine->getDevice(), 1, &descriptorWrite, 0, nullptr);
 }

@@ -18,10 +18,10 @@ HammerCustomTexture::HammerCustomTexture(HammerEngine& eng, unsigned char* bitma
 }
 
 HammerCustomTexture::~HammerCustomTexture() {
-    vkDestroySampler(engine.device, sampler, nullptr);
-    vkDestroyImageView(engine.device, imageView, nullptr);
-    vkDestroyImage(engine.device, image, nullptr);
-    vkFreeMemory(engine.device, imageMemory, nullptr);
+    vkDestroySampler(engine.getDevice(), sampler, nullptr);
+    vkDestroyImageView(engine.getDevice(), imageView, nullptr);
+    vkDestroyImage(engine.getDevice(), image, nullptr);
+    vkFreeMemory(engine.getDevice(), imageMemory, nullptr);
 }
 
 void HammerCustomTexture::createTextureImage(unsigned char* pixels, uint32_t texWidth, uint32_t texHeight) {
@@ -42,9 +42,9 @@ void HammerCustomTexture::createTextureImage(unsigned char* pixels, uint32_t tex
                         stagingBuffer, stagingBufferMemory);
 
     void* data;
-    vkMapMemory(engine.device, stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(engine.getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
     memcpy(data, rgbaPixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(engine.device, stagingBufferMemory);
+    vkUnmapMemory(engine.getDevice(), stagingBufferMemory);
 
     free(rgbaPixels);
 
@@ -59,20 +59,21 @@ void HammerCustomTexture::createTextureImage(unsigned char* pixels, uint32_t tex
     engine.transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    vkQueueWaitIdle(engine.graphicsQueue);
+    vkQueueWaitIdle(engine.getGraphicsQueue());
 
-    vkDestroyBuffer(engine.device, stagingBuffer, nullptr);
-    vkFreeMemory(engine.device, stagingBufferMemory, nullptr);
+    vkDestroyBuffer(engine.getDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(engine.getDevice(), stagingBufferMemory, nullptr);
 }
 
 void HammerCustomTexture::allocateDescriptorSet() {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = engine.descriptorPool;
+    allocInfo.descriptorPool = engine.getDescriptorPool();
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &engine.textureSetLayout;
+    VkDescriptorSetLayout temp = engine.getTextureSetLayout();
+    allocInfo.pSetLayouts = &temp;
 
-    if (vkAllocateDescriptorSets(engine.device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
+    if (vkAllocateDescriptorSets(engine.getDevice(), &allocInfo, &descriptorSet) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate texture descriptor set!");
     }
 
@@ -90,7 +91,7 @@ void HammerCustomTexture::allocateDescriptorSet() {
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pImageInfo = &imageInfo;
 
-    vkUpdateDescriptorSets(engine.device, 1, &descriptorWrite, 0, nullptr);
+    vkUpdateDescriptorSets(engine.getDevice(), 1, &descriptorWrite, 0, nullptr);
 }
 
 void HammerCustomTexture::createTextureSampler(HammerTextureFilter filter) {
@@ -115,7 +116,7 @@ void HammerCustomTexture::createTextureSampler(HammerTextureFilter filter) {
     samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
     samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-    if (vkCreateSampler(engine.device, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
+    if (vkCreateSampler(engine.getDevice(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture sampler!");
     }
 }
@@ -153,9 +154,9 @@ void HammerTexture::createTextureImage(const std::string& path) {
                         stagingBuffer, stagingBufferMemory);
 
     void* data;
-    vkMapMemory(engine.device, stagingBufferMemory, 0, imageSize, 0, &data);
+    vkMapMemory(engine.getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
     memcpy(data, pixels, static_cast<size_t>(imageSize));
-    vkUnmapMemory(engine.device, stagingBufferMemory);
+    vkUnmapMemory(engine.getDevice(), stagingBufferMemory);
 
     stbi_image_free(pixels);
 
@@ -170,18 +171,19 @@ void HammerTexture::createTextureImage(const std::string& path) {
     engine.transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
                                  VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 
-    vkDestroyBuffer(engine.device, stagingBuffer, nullptr);
-    vkFreeMemory(engine.device, stagingBufferMemory, nullptr);
+    vkDestroyBuffer(engine.getDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(engine.getDevice(), stagingBufferMemory, nullptr);
 }
 
 void HammerTexture::allocateDescriptorSet() {
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = engine.descriptorPool;
+    allocInfo.descriptorPool = engine.getDescriptorPool();
     allocInfo.descriptorSetCount = 1;
-    allocInfo.pSetLayouts = &engine.textureSetLayout;
+    VkDescriptorSetLayout temp = engine.getTextureSetLayout();
+    allocInfo.pSetLayouts = &temp;
 
-    if (vkAllocateDescriptorSets(engine.device, &allocInfo, &descriptorSet) != VK_SUCCESS) {
+    if (vkAllocateDescriptorSets(engine.getDevice(), &allocInfo, &descriptorSet) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate texture descriptor set!");
     }
 
@@ -199,7 +201,7 @@ void HammerTexture::allocateDescriptorSet() {
     descriptorWrite.descriptorCount = 1;
     descriptorWrite.pImageInfo = &imageInfo;
 
-    vkUpdateDescriptorSets(engine.device, 1, &descriptorWrite, 0, nullptr);
+    vkUpdateDescriptorSets(engine.getDevice(), 1, &descriptorWrite, 0, nullptr);
 }
 
 void HammerTexture::createTextureSampler(HammerTextureFilter filter) {
@@ -221,7 +223,7 @@ void HammerTexture::createTextureSampler(HammerTextureFilter filter) {
     // Anisotropy (Optional, but looks much better) idk what i will do with this
 
     VkPhysicalDeviceProperties properties{};
-    vkGetPhysicalDeviceProperties(engine.physicalDevice, &properties);
+    vkGetPhysicalDeviceProperties(engine.getPhysicalDevice(), &properties);
 
     samplerInfo.anisotropyEnable = VK_TRUE;
     samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
@@ -232,7 +234,7 @@ void HammerTexture::createTextureSampler(HammerTextureFilter filter) {
     samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
     samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
-    if (vkCreateSampler(engine.device, &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
+    if (vkCreateSampler(engine.getDevice(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture sampler!");
     }
 }
@@ -252,10 +254,10 @@ HammerTexture::HammerTexture(HammerEngine& eng, const std::string& path, HammerT
 }
 
 HammerTexture::~HammerTexture() {
-    vkDestroySampler(engine.device, sampler, nullptr);
-    vkDestroyImageView(engine.device, imageView, nullptr);
-    vkDestroyImage(engine.device, image, nullptr);
-    vkFreeMemory(engine.device, imageMemory, nullptr);
+    vkDestroySampler(engine.getDevice(), sampler, nullptr);
+    vkDestroyImageView(engine.getDevice(), imageView, nullptr);
+    vkDestroyImage(engine.getDevice(), image, nullptr);
+    vkFreeMemory(engine.getDevice(), imageMemory, nullptr);
     
     // Note: Descriptor Sets are usually freed automatically when the pool is destroyed i think, well i fucking hope
 }

@@ -83,36 +83,6 @@ VkVertexInputBindingDescription Vertex::getBindingDescription() {
     return bindingDescription;
 }
 
-std::array<VkVertexInputAttributeDescription, 4> Vertex::getAttributeDescriptions() {
-    std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
-
-    // 0: Position
-    attributeDescriptions[0].binding = 0;
-    attributeDescriptions[0].location = 0;
-    attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[0].offset = offsetof(Vertex, pos);
-
-    // 1: Color
-    attributeDescriptions[1].binding = 0;
-    attributeDescriptions[1].location = 1;
-    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[1].offset = offsetof(Vertex, color);
-
-    // 2: TexCoord
-    attributeDescriptions[2].binding = 0;
-    attributeDescriptions[2].location = 2;
-    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
-    attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
-
-    // 3: Normal
-    attributeDescriptions[3].binding = 0;
-    attributeDescriptions[3].location = 3;
-    attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
-    attributeDescriptions[3].offset = offsetof(Vertex, normal);
-
-    return attributeDescriptions;
-}
-
 void HammerEngine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
     auto app = reinterpret_cast<HammerEngine*>(glfwGetWindowUserPointer(window));
     app->framebufferResized = true;
@@ -135,7 +105,7 @@ void HammerEngine::initVulkan() {
     // createTextureImage();
     // createTextureImageView();
     // createTextureSampler();
-    //createStagingBuffer();
+    createStagingBuffer();
     //createVertexBuffer();
     //createIndexBuffer();
     createUniformBuffers();
@@ -449,16 +419,16 @@ HammerMesh::HammerMesh(HammerEngine& engine, HammerPipeline* pipeline, HammerTex
 
 HammerMesh::~HammerMesh() {
     if (vertexBuffer != VK_NULL_HANDLE) {
-        vkDestroyBuffer(engine.device, vertexBuffer, nullptr);
+        vkDestroyBuffer(engine.getDevice(), vertexBuffer, nullptr);
     }
     if (vertexBufferMemory != VK_NULL_HANDLE) {
-        vkFreeMemory(engine.device, vertexBufferMemory, nullptr);
+        vkFreeMemory(engine.getDevice(), vertexBufferMemory, nullptr);
     }
     if (indexBuffer != VK_NULL_HANDLE) {
-        vkDestroyBuffer(engine.device, indexBuffer, nullptr);
+        vkDestroyBuffer(engine.getDevice(), indexBuffer, nullptr);
     }
     if (indexBufferMemory != VK_NULL_HANDLE) {
-        vkFreeMemory(engine.device, indexBufferMemory, nullptr);
+        vkFreeMemory(engine.getDevice(), indexBufferMemory, nullptr);
     }
 }
 
@@ -479,9 +449,9 @@ void HammerMesh::createVertexBuffer(const std::vector<Vertex>& vertices) {
     );
 
     void* data;
-    vkMapMemory(engine.device, stagingBufferMemory, 0, bufferSize, 0, &data);
+    vkMapMemory(engine.getDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
     memcpy(data, vertices.data(), (size_t)bufferSize);
-    vkUnmapMemory(engine.device, stagingBufferMemory);
+    vkUnmapMemory(engine.getDevice(), stagingBufferMemory);
 
     engine.createBuffer(
         bufferSize, 
@@ -493,10 +463,10 @@ void HammerMesh::createVertexBuffer(const std::vector<Vertex>& vertices) {
 
     engine.copyBuffer(stagingBuffer, vertexBuffer, bufferSize);
 
-    vkQueueWaitIdle(engine.graphicsQueue);
+    vkQueueWaitIdle(engine.getGraphicsQueue());
 
-    vkDestroyBuffer(engine.device, stagingBuffer, nullptr);
-    vkFreeMemory(engine.device, stagingBufferMemory, nullptr);
+    vkDestroyBuffer(engine.getDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(engine.getDevice(), stagingBufferMemory, nullptr);
 }
 
 void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
@@ -516,9 +486,9 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
     );
 
     void* data;
-    vkMapMemory(engine.device, stagingBufferMemory, 0, bufferSize, 0, &data);
+    vkMapMemory(engine.getDevice(), stagingBufferMemory, 0, bufferSize, 0, &data);
     memcpy(data, indices.data(), (size_t)bufferSize);
-    vkUnmapMemory(engine.device, stagingBufferMemory);
+    vkUnmapMemory(engine.getDevice(), stagingBufferMemory);
 
     engine.createBuffer(
         bufferSize, 
@@ -530,8 +500,8 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
 
     engine.copyBuffer(stagingBuffer, indexBuffer, bufferSize);
 
-    vkDestroyBuffer(engine.device, stagingBuffer, nullptr);
-    vkFreeMemory(engine.device, stagingBufferMemory, nullptr);
+    vkDestroyBuffer(engine.getDevice(), stagingBuffer, nullptr);
+    vkFreeMemory(engine.getDevice(), stagingBufferMemory, nullptr);
 }
 
 void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFrame) {
@@ -550,8 +520,8 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
             return;
         }
 
-        if (currentFrame >= engine.globalDescriptorSets.size() || 
-            engine.globalDescriptorSets[currentFrame] == VK_NULL_HANDLE) {
+        if (currentFrame >= engine.getGlobalDescriptorSets().size() || 
+            engine.getGlobalDescriptorSets()[currentFrame] == VK_NULL_HANDLE) {
             return;
         }
 
@@ -561,7 +531,7 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
         vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
         vkCmdBindIndexBuffer(commandBuffer, indexBuffer, 0, VK_INDEX_TYPE_UINT32);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &engine.globalDescriptorSets[currentFrame], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &engine.getGlobalDescriptorSets()[currentFrame], 0, nullptr);
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 1, 1, &texture->descriptorSet, 0, nullptr);
         
@@ -616,14 +586,14 @@ void HammerMesh::updateBuffers(std::vector<Vertex> vertexData, std::vector<uint3
     }
 
     void* vData;
-    vkMapMemory(engine.device, engine.stagingBufferMemory, 0, vertexSize, 0, &vData);
+    vkMapMemory(engine.getDevice(), engine.stagingBufferMemory, 0, vertexSize, 0, &vData);
     memcpy(vData, vertexData.data(), (size_t)vertexSize);
-    vkUnmapMemory(engine.device, engine.stagingBufferMemory);
+    vkUnmapMemory(engine.getDevice(), engine.stagingBufferMemory);
 
     void* iData;
-    vkMapMemory(engine.device, engine.stagingBuffer2Memory, 0, indexSize, 0, &iData);
+    vkMapMemory(engine.getDevice(), engine.stagingBuffer2Memory, 0, indexSize, 0, &iData);
     memcpy(iData, indexData.data(), (size_t)indexSize);
-    vkUnmapMemory(engine.device, engine.stagingBuffer2Memory);
+    vkUnmapMemory(engine.getDevice(), engine.stagingBuffer2Memory);
 
     VkCommandBuffer commandBuffer = engine.beginSingleTimeCommands();
 

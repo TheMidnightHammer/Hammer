@@ -49,17 +49,48 @@ void generateCubeGrid(std::vector<Vertex>& outVertices, std::vector<uint32_t>& o
     }
 }
 
+std::array<VkVertexInputAttributeDescription, 4> Vertex::getAttributeDescriptions() {
+    std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
+
+    // 0: Position
+    attributeDescriptions[0].binding = 0;
+    attributeDescriptions[0].location = 0;
+    attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+    // 1: Color
+    attributeDescriptions[1].binding = 0;
+    attributeDescriptions[1].location = 1;
+    attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+    // 2: TexCoord
+    attributeDescriptions[2].binding = 0;
+    attributeDescriptions[2].location = 2;
+    attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+    attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+    // 3: Normal
+    attributeDescriptions[3].binding = 0;
+    attributeDescriptions[3].location = 3;
+    attributeDescriptions[3].format = VK_FORMAT_R32G32B32_SFLOAT;
+    attributeDescriptions[3].offset = offsetof(Vertex, normal);
+
+    return attributeDescriptions;
+}
+
 int main() {
     HammerEngine Engine;
 
     Engine.enableValidationLayers = true;
-    Engine.WindowWidth = 1200;
-    Engine.WindowHeight = 900;
+    Engine.windowWidth = 1200;
+    Engine.windowHeight = 900;
     Engine.MaxTextures = 1000;
     Engine.mouseLock = true; 
     Engine.windowName = "Hammer Engine - 3D Texture World";
     Engine.renderDistance = 1000.0f;
     Engine.cameraSpeed = 2.5f;
+    Engine.setMaxBufferSize(1024*1024*16); // 16 mb of staging size
 
     Engine.cameraPosition = glm::vec3(5.0f, 5.0f, 15.0f);
     Engine.cameraFront = glm::normalize(glm::vec3(0.0f, -0.5f, -1.0f));
@@ -81,6 +112,8 @@ int main() {
     // Create and store mesh
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, boxTexture, vertices, indices);
     Engine.meshs.push_back(myMesh);
+
+    myMesh->updateBuffers(vertices, indices);
 
     Engine.drawPassStart();
     while (!glfwWindowShouldClose(Engine.window)) {

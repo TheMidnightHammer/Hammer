@@ -85,6 +85,8 @@ struct Vertex {
     static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions(); 
 };
 
+// forward declaration of classes
+
 class HammerEngine;
 class HammerPipeline;
 class HammerSSBO;
@@ -350,8 +352,8 @@ private:
     void createVertexBuffer(const std::vector<Vertex>& vertices);
     void createIndexBuffer(const std::vector<uint32_t>& indices);
 
-    VkBuffer stagingBuffer;
-    VkDeviceMemory stagingBufferMemory;
+    VkBuffer stagingBuffer = VK_NULL_HANDLE;
+    VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
 
     HammerEngine& engine;
 
@@ -405,8 +407,8 @@ public:
 class HammerEngine {
 public:
 
-    uint32_t WindowWidth;
-    uint32_t WindowHeight;
+    uint32_t windowWidth;
+    uint32_t windowHeight;
 
     bool enableValidationLayers;
 
@@ -430,8 +432,6 @@ public:
 
     std::string windowName = "Hammer Engine";
 
-    void runTest();
-
     bool mouseLock = false;
 
     float renderDistance = 512.0f; // how fare the camera can see, bigger the numbre bigger the buffers more memory needed
@@ -447,8 +447,6 @@ public:
     void InitImgui();
 
     void addMeshRenderer(HammerMesh* mesh);
-
-    void setMaxVertciesIndicesSize(VkDeviceSize maxsize); // giving the maximume size that the vertcies and incices can go to.
 
     void cleanup(); // engine clean up.
 
@@ -475,6 +473,80 @@ public:
     void removeMeshRenderer(int index);
 
     HammerMesh* CreateTextQuad(HammerEngine& engine, HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height);
+
+    void setMaxBufferSize(VkDeviceSize size);
+
+
+
+
+    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
+
+    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
+
+    VkShaderModule createShaderModule(const std::vector<char>& code);
+
+    std::vector<char> readFile(std::string& filename);
+
+    VkCommandBuffer beginSingleTimeCommands();
+
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+
+    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
+
+    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+
+    void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
+
+    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
+
+    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
+
+    VkDescriptorPool getDescriptorPool() {
+        return descriptorPool;
+    }
+
+    VkDevice getDevice() {
+        return device;
+    }
+
+    VkPhysicalDevice getPhysicalDevice() {
+        return physicalDevice;
+    }
+
+    VkQueue getGraphicsQueue() {
+        return graphicsQueue;
+    }
+
+    std::vector<VkDescriptorSet> getGlobalDescriptorSets() {
+        return globalDescriptorSets;
+    }
+
+    VkRenderPass getRenderPass() {
+        return renderPass;
+    }
+
+    VkDescriptorSetLayout getGlobalSetLayout(){
+        return globalSetLayout;
+    }
+
+    VkDescriptorSetLayout getTextureSetLayout() {
+        return textureSetLayout;
+    }
+
+    VkDescriptorSetLayout getSsboSetLayout() {
+        return ssboSetLayout;
+    }
+
+
+    VkBuffer stagingBuffer = VK_NULL_HANDLE;
+    VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
+    VkDeviceSize stagingBufferSize = 0;
+
+    VkBuffer stagingBuffer2 = VK_NULL_HANDLE;
+    VkDeviceMemory stagingBuffer2Memory = VK_NULL_HANDLE;
+    VkDeviceSize stagingBuffer2Size = 0;
+
+private:
 
     double currentTime = glfwGetTime();
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
@@ -513,14 +585,6 @@ public:
 	VkImage depthImage;
 	VkDeviceMemory depthImageMemory;
 	VkImageView depthImageView;
-
-    VkBuffer stagingBuffer = VK_NULL_HANDLE;
-    VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
-    VkDeviceSize stagingBufferSize = 0;
-
-    VkBuffer stagingBuffer2 = VK_NULL_HANDLE;
-    VkDeviceMemory stagingBuffer2Memory = VK_NULL_HANDLE;
-    VkDeviceSize stagingBuffer2Size = 0;
 
     std::vector<VkFence> imagesInFlight;
 
@@ -597,14 +661,6 @@ public:
 
     void createTextureSampler();
 
-    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags);
-
-    void createImage(uint32_t width, uint32_t height, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, VkImage& image, VkDeviceMemory& imageMemory);
-
-    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout);
-
-    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-
     void createVertexBuffer();
 
     void createIndexBuffer();
@@ -615,16 +671,6 @@ public:
 
     void createDescriptorSets();
 
-    void createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory);
-
-    VkCommandBuffer beginSingleTimeCommands();
-
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-
-    void copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size);
-
-    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-
     void createCommandBuffers();
 
     void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
@@ -632,8 +678,6 @@ public:
     void createSyncObjects();
 
     void updateUniformBuffer(uint32_t currentImage);
-
-    VkShaderModule createShaderModule(const std::vector<char>& code);
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
@@ -652,8 +696,6 @@ public:
     std::vector<const char*> getRequiredExtensions();
 
     bool checkValidationLayerSupport();
-
-    std::vector<char> readFile(std::string& filename);
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
 
