@@ -468,7 +468,22 @@ HammerMesh::~HammerMesh() {
 void HammerMesh::createVertexBuffer(const std::vector<Vertex>& vertices) {
     if (vertices.empty()) return;
 
-    VkDeviceSize bufferSize = sizeof(vertices[0]) * vertices.size();
+    uint64_t totalElements = static_cast<uint64_t>(vertices.size());
+    uint64_t elementSize = static_cast<uint64_t>(sizeof(Vertex));
+    uint64_t bufferSizeIndex = totalElements * elementSize;
+
+    //                                 byte       kb        mb       gb
+    constexpr uint64_t maxBufferSize = 1024ULL * 1024ULL * 1024ULL * 2ULL;
+
+    VkDeviceSize bufferSize = static_cast<VkDeviceSize>(bufferSizeIndex);
+
+    std::string errorMessage = "Mesh buffer size (" + 
+                               std::to_string(bufferSizeIndex / (1024 * 1024)) + 
+                               " MB) exceeds the 2048 MB maximum limit, try to seperate your mesh in sub-chunks or remove some data of the mesh";
+
+    if(bufferSizeIndex / (1024 * 1024) < maxBufferSize){
+        throw std::runtime_error(errorMessage);
+    }
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
@@ -505,7 +520,22 @@ void HammerMesh::createVertexBuffer(const std::vector<Vertex>& vertices) {
 void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
     if (indices.empty()) return;
 
-    VkDeviceSize bufferSize = sizeof(indices[0]) * indices.size();
+    uint64_t totalElements = static_cast<uint64_t>(indices.size());
+    uint64_t elementSize = static_cast<uint64_t>(sizeof(Vertex));
+    uint64_t bufferSizeIndex = totalElements * elementSize;
+
+    //                                 byte       kb        mb       gb
+    constexpr uint64_t maxBufferSize = 1024ULL * 1024ULL * 1024ULL * 2ULL;
+
+    VkDeviceSize bufferSize = static_cast<VkDeviceSize>(bufferSizeIndex);
+
+    std::string errorMessage = "Mesh buffer size (" + 
+                               std::to_string(bufferSizeIndex / (1024 * 1024)) + 
+                               " MB) exceeds the 2048 MB maximum limit, try to seperate your mesh in sub-chunks or remove some data of the mesh";
+
+    if(bufferSizeIndex / (1024 * 1024) < maxBufferSize){
+        throw std::runtime_error(errorMessage);
+    }
 
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
