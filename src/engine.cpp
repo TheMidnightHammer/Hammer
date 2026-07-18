@@ -481,7 +481,7 @@ void HammerMesh::createVertexBuffer(const std::vector<Vertex>& vertices) {
                                std::to_string(bufferSizeIndex / (1024 * 1024)) + 
                                " MB) exceeds the 2048 MB maximum limit, try to seperate your mesh in sub-chunks or remove some data of the mesh";
 
-    if(bufferSizeIndex / (1024 * 1024) < maxBufferSize){
+    if(bufferSizeIndex > maxBufferSize){
         throw std::runtime_error(errorMessage);
     }
 
@@ -533,7 +533,7 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
                                std::to_string(bufferSizeIndex / (1024 * 1024)) + 
                                " MB) exceeds the 2048 MB maximum limit, try to seperate your mesh in sub-chunks or remove some data of the mesh";
 
-    if(bufferSizeIndex / (1024 * 1024) < maxBufferSize){
+    if(bufferSizeIndex > maxBufferSize){
         throw std::runtime_error(errorMessage);
     }
 
