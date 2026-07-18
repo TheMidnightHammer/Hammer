@@ -521,7 +521,7 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
     if (indices.empty()) return;
 
     uint64_t totalElements = static_cast<uint64_t>(indices.size());
-    uint64_t elementSize = static_cast<uint64_t>(sizeof(Vertex));
+    uint64_t elementSize = static_cast<uint64_t>(sizeof(uint32_t));
     uint64_t bufferSizeIndex = totalElements * elementSize;
 
     //                                 byte       kb        mb       gb
