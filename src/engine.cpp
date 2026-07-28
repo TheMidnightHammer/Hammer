@@ -578,11 +578,6 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
             return;
         } 
 
-        if (texture->descriptorSet == VK_NULL_HANDLE){ 
-            std::cerr << "WARNING: texture descriptor set is NULL\n";
-            return;
-        }
-
         if (currentFrame >= engine.getGlobalDescriptorSets().size() || 
             engine.getGlobalDescriptorSets()[currentFrame] == VK_NULL_HANDLE) {
             return;
@@ -596,7 +591,9 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
 
         vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 0, 1, &engine.getGlobalDescriptorSets()[currentFrame], 0, nullptr);
 
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 1, 1, &texture->descriptorSet, 0, nullptr);
+        if (texture != nullptr){ // this means there is no texture, mesh without texture
+            vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 1, 1, &texture->descriptorSet, 0, nullptr);
+        }
         
         if (pipeline->ssbo != nullptr && pipeline->ssbo->getDescriptorSet() != VK_NULL_HANDLE) {
             VkDescriptorSet ssboDescriptorSet = pipeline->ssbo->getDescriptorSet(); // compiler was yapping too much
