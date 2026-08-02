@@ -71,4 +71,4 @@ We are looking for contributors! If you want to contribute to Hammer, go to the 
 
 # How to use?
 
-The Hammer Engine tutorial is being made right now and should be finished very soon. You can find it at https://github.com/MidnightHammer-code/Hammer/tree/main/docs.
+The tutorial is being made right now and should be finished very soon. You can find it at https://github.com/MidnightHammer-code/Hammer/tree/main/docs.
