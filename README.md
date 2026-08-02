@@ -1,11 +1,11 @@
 # Hammer
-Hammer is an open source engine using Vulkan as backend.
+Hammer is an open source engine using Vulkan as back-end.
 It supports simple collision detection, model loading, there is an example of all features in the demo folder.
 
 [Showoff.webm](https://github.com/user-attachments/assets/d3d87ad2-bde6-4431-944c-7280afff7d88)
 
 # The goal of Hammer Engine
-The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5, even old games like Doom 3 (dhewm3) will struggle, this is why i made a vulkan engine with a very optimized rendering pipeline.
+The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5, even old games like Doom 3 (dhewm3) will struggle, this is why i made a Vulkan engine with a very optimized rendering pipeline.
 
 # The performance of Hammer
 
@@ -13,13 +13,13 @@ The #1 goal of Hammer is performance on low-end machines. It out-performs many o
 
 # Cross-platform
 
-Hammer supports for all major linux distro, windows (In testing) and chromebook via an emulation layer.
+Hammer supports for all major Linux distros, windows (In testing) and Chromebook via an emulation layer.
 
 # Upcoming features
 1. Directional lights
 2. More physics
 3. Compute shaders
-4. Multithreading support (recording command buffers on different cores, Help needed)
+4. Multi-threading support (recording command buffers on different cores, Help needed)
 
 # What does Hammer support?
 
@@ -29,7 +29,7 @@ SSBO (shader storage buffer object): enables you to send custom data to the GPU
 
 Simple collision detection: simple but useful
 
-Unlimited textures: many old engine had a hard limmit of how many textures you could you, Hammer does not have any
+Unlimited textures: many old engine had a hard limit of how many textures you could you, Hammer does not have any
 
 Model loading (.obj only): makes it easier to load complex models
 
@@ -68,6 +68,7 @@ We are looking for contributors! If you want to contribute to Hammer, go to the 
 5. Add documentation, to help people learn Hammer.
 6. Add more demos to the demo/ folder.
 7. Implement multi-command buffer recording on different cores
+8. Sorting all meshes by: pipeline and texture, so the CPU does not waste cycles binding different resources.
 
 # How to use?
 
