@@ -118,12 +118,16 @@ std::vector<uint32_t> indices = { 0, 1, 2, 2, 3, 0 };
 ```
 
 ### 5.5 Adding giving the mesh to Hammer
-Engine.meshs.push_back(std::make_unique<HammerMesh>(Engine, mainPipeline.get(), mainTexture.get(), vertices, indices));
+
+uh no, there is a function to do this i.g some where
+
+`Engine.meshs.push_back(std::make_unique<HammerMesh>(Engine, mainPipeline.get(), mainTexture.get(), vertices, indices));`
 
 ### 6. The Main Loop
 
 Finally, we create the "heartbeat" of your application. This loop runs every frame until you close the window.
 
+```
 Engine.drawPassStart(); // Prepare the GPU for drawing
 
 while (!glfwWindowShouldClose(Engine.window)) {
@@ -141,6 +145,7 @@ while (!glfwWindowShouldClose(Engine.window)) {
 }
 
 Engine.drawPassEnd(); // Clean up GPU tasks
+```
 
 ### 7. Memory Cleanup
 
