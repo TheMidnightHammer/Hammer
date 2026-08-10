@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 MidnightHammer-code
+ * This source code is licensed under the MIT license
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #version 450
 
 layout(set = 0, binding = 0) uniform UniformBufferObject {
