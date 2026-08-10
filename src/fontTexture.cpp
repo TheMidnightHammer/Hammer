@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 MidnightHammer-code
+ * This source code is licensed under the MIT license
+ * LICENSE file in the root directory of this source tree.
+ */
 #include "../include/HammerEngine/HammerEngine.h"
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../lib/stb_truetype.h"
