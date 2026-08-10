@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2026 MidnightHammer-code
- * This source code is licensed under the GPL 3.0 license
+ * This source code is licensed under the MIT license
  * LICENSE file in the root directory of this source tree.
  */
 
