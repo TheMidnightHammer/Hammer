@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2026 MidnightHammer-code
+ * This source code is licensed under the MIT license
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #include "../include/HammerEngine/HammerEngine.h"
 
 Char HammerFont::charCoor(int index, int totalChars, float xOffset, float yOffset, float charWidth, float charHeight, const char name) {
