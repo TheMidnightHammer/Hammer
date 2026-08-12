@@ -13,19 +13,9 @@
 
 
 int main() {
-    HammerEngine Engine;
+    HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    Engine.enableValidationLayers = true;
-    Engine.windowWidth = 1000;
-    Engine.windowHeight = 1000;
-    Engine.MaxTextures = 1000;
-    Engine.cameraPosition = glm::vec3(0, 0, 2);
-    Engine.windowName = "Hammer Engine - Sprite Movement";
-    Engine.mouseLock = false;
-    Engine.cameraSpeed = 0.1f;
-    Engine.renderDistance = 16.0f;
-    Engine.setMaxBufferSize(1024*1024*16); // 16 mb of staging size
-
+    HammerEngine Engine(info);
     Engine.initWindow();
     Engine.initVulkan();
 

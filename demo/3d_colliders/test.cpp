@@ -12,21 +12,13 @@
 
 
 int main() {
-    HammerEngine Engine;
+    HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    Engine.enableValidationLayers = true;
-    Engine.windowWidth = 900;
-    Engine.windowHeight = 900;
-    Engine.MaxTextures = 1000; 
-    Engine.windowName = "Hammer Engine - Collision Demo";
-    Engine.mouseLock = true;
-    Engine.cameraSpeed = 0.1f;
-    Engine.renderDistance = 64.0f;
-    Engine.cameraPosition = glm::vec3(0, 5, 0);
-    Engine.setMaxBufferSize(1024*1024*16); // 16 mb of staging size
-
+    HammerEngine Engine(info);
     Engine.initWindow();
     Engine.initVulkan();
+
+    Engine.cameraPosition = glm::vec3(0, 5, 0);
 
     HammerTexture* mainTexture = new HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);
 

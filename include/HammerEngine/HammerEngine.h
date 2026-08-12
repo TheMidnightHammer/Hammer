@@ -60,6 +60,33 @@ public:
 // g_Logger.Log(frameData); 
 
 
+class HammerInfo {
+public:
+
+    bool enableValidationLayers;
+    int windowWidth;
+    int windowHeight;
+    std::string windowName;
+    int MaxTextures;
+    bool mouseLock;
+    float cameraSpeed;
+    float renderDistance;
+    VkDeviceSize stagingBufferSize;
+
+    HammerInfo(bool EnableValidationLayers,
+                int WindowWidth,
+                int WindowHeight,
+                std::string WindowName,
+                int maxTextures,
+                bool MouseLock,
+                float CameraSpeed,
+                float RenderDistance,
+                VkDeviceSize StagingBufferSize) : enableValidationLayers(EnableValidationLayers),
+                                                windowHeight(WindowHeight), windowWidth(WindowWidth),
+                                                windowName(WindowName), MaxTextures(maxTextures),
+                                                mouseLock(MouseLock), cameraSpeed(CameraSpeed),
+                                                renderDistance(RenderDistance), stagingBufferSize(StagingBufferSize) {}
+};
 
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
@@ -406,6 +433,18 @@ public:
 
 class HammerEngine {
 public:
+
+    HammerEngine(HammerInfo info) {
+        this->enableValidationLayers = info.enableValidationLayers;
+        this->windowWidth = info.windowWidth;
+        this->windowHeight = info.windowHeight;
+        this->windowName = info.windowName;
+        this->MaxTextures = info.MaxTextures;
+        this->mouseLock = info.mouseLock;
+        this->cameraSpeed = info.cameraSpeed;
+        this->renderDistance = info.renderDistance;
+        this->setMaxBufferSize(info.stagingBufferSize); // 16 mb of staging size
+    }
 
     uint32_t windowWidth;
     uint32_t windowHeight;

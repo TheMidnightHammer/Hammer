@@ -84,3 +84,4 @@ void HammerEngine::updateFrameTimeStart(){
     frameCount++;
     glfwPollEvents();
 }
+

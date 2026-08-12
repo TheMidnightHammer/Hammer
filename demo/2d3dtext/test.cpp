@@ -12,18 +12,10 @@
 
 
 int main() {
-    HammerEngine engine;
 
-    engine.enableValidationLayers = true;
-    engine.windowWidth = 1000;
-    engine.windowHeight = 1000;
-    engine.windowName = "Hammer engine - 2D Texture Demo";
-    engine.MaxTextures = 1000;
-    engine.mouseLock = false;
-    engine.cameraSpeed = 0.1f;
-    engine.renderDistance = 16.0f;
-    engine.setMaxBufferSize(1024*1024*16); // 16 mb of staging size
+    HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
+    HammerEngine engine(info);
     engine.initWindow();
     engine.initVulkan();
 

@@ -13,23 +13,14 @@
 
 
 int main() {
-    HammerEngine Engine;
+    HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    Engine.enableValidationLayers = true;
-    Engine.windowWidth = 1200;
-    Engine.windowHeight = 900;
-    Engine.MaxTextures = 1000;
-    Engine.mouseLock = true; 
-    Engine.windowName = "Hammer Engine - Model";
-    Engine.renderDistance = 1000.0f;
-    Engine.cameraSpeed = 0.1f;
-    Engine.setMaxBufferSize(1024*1024*16); // 16 mb of staging size
+    HammerEngine Engine(info);
+    Engine.initWindow();
+    Engine.initVulkan();
 
     Engine.cameraPosition = glm::vec3(5.0f, 5.0f, 15.0f);
     Engine.cameraFront = glm::normalize(glm::vec3(0.0f, -0.5f, -1.0f));
-
-    Engine.initWindow();
-    Engine.initVulkan();
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
