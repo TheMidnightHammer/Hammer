@@ -36,11 +36,11 @@ SOFTWARE.
 
 2. GLM (OpenGL Mathematics)
 
-* **Author: G-Truc Creation
+* **Author**: G-Truc Creation
 
-* **License: MIT License
+* **License**: MIT License
 
-* **Repository: https://github.com/g-truc/glm
+* **Repository**: https://github.com/g-truc/glm
 
 ```LThe MIT License (MIT)ht (c) 2005-2026 G-Truc Creation
 
@@ -64,11 +64,11 @@ SOFTWARE.
 ```
 3. GLFW
 
-* **Authors: Marcus Geelnard, Camilla Löwy
+* **Authors**: Marcus Geelnard, Camilla Löwy
 
-* **License: zlib/libpng License
+* **License**: zlib/libpng License
 
-* **Repository: https://github.com/glfw/glfw
+* **Repository**: https://github.com/glfw/glfw
 
 ```
 
@@ -96,11 +96,11 @@ freely, subject to the following restrictions:
 ```
 4. stb_image & stb_truetype
 
-* **Author: Sean Barrett
+* **Author**: Sean Barrett
 
-* **License: Public Domain / MIT License (Dual-licensed)
+* **License**: Public Domain / MIT License (Dual-licensed)
 
-* **Repository: https://github.com/nothings/stb
+* **Repository**: https://github.com/nothings/stb
 ```
 
 This software is dual-licensed to the public domain and under the following
