@@ -679,7 +679,7 @@ void HammerEngine::createInstance() {
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "HammerEngine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.apiVersion = VK_API_VERSION_1_0;
+    appInfo.apiVersion = VK_API_VERSION_1_4;
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -745,7 +745,29 @@ void HammerEngine::pickPhysicalDevice() {
 
                 VkPhysicalDeviceProperties props;
                 vkGetPhysicalDeviceProperties(device, &props);
-                std::cout << "Using GPU: " << props.deviceName << std::endl;
+
+                VkPhysicalDeviceDriverProperties driverProps = {
+                    .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DRIVER_PROPERTIES,
+                    .pNext = NULL
+                };
+                VkPhysicalDeviceProperties2 props2 = {
+                    .sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2,
+                    .pNext = &driverProps
+                };
+                vkGetPhysicalDeviceProperties2(physicalDevice, &props2);
+
+                GPUName = props.deviceName;
+                driverName = driverProps.driverName;
+                driverInfo = driverProps.driverInfo;
+                driverVersion = props.driverVersion;
+
+
+
+                std::cout << "Using GPU: " << props.deviceName << "\n";
+                std::cout << "Driver Name: " << driverProps.driverName << "\n";
+                std::cout << "Driver Info: " << driverProps.driverInfo << "\n";
+                std::cout << "Driver Version: " << props.driverVersion << "\n";
+
 
                 break;
             }

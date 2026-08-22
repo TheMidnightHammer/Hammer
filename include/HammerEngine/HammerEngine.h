@@ -471,6 +471,14 @@ public:
 
     std::string windowName = "Hammer Engine";
 
+    std::string GPUName = "NONE SELECTED";
+
+    std::string driverName = "NONE SELECTED";
+
+    std::string driverInfo = "NONE SELECTED";
+
+    uint32_t driverVersion = 0;
+
     bool mouseLock = false;
 
     float renderDistance = 512.0f; // how fare the camera can see, bigger the numbre bigger the buffers more memory needed
