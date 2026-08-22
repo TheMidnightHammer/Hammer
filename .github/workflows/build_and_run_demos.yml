@@ -19,12 +19,18 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Install System Dependencies
+    - name: Install Vulkan 1.4 Headers & System Dependencies
       run: |
         sudo apt-get update
-        # Installs build tools and graphics headers for compilation
-        sudo apt-get install -y build-essential cmake libvulkan-dev \
-          vulkan-validationlayers spirv-tools libstb-dev libglm-dev libglfw3-dev
+        sudo apt-get install -y build-essential cmake libstb-dev libglm-dev libglfw3-dev \
+          libvulkan-dev vulkan-validationlayers spirv-tools git
+
+        # Install latest Vulkan 1.4 headers directly to system path
+        git clone https://github.com/KhronosGroup/Vulkan-Headers.git /tmp/Vulkan-Headers
+        cd /tmp/Vulkan-Headers
+        git checkout v1.4.304  # Latest Vulkan 1.4 release tag
+        cmake -B build -DCMAKE_INSTALL_PREFIX=/usr/local
+        sudo cmake --install build
 
     - name: Build Each Demo
       run: |
@@ -36,7 +42,6 @@ jobs:
           cd "$demo_dir"
           mkdir -p build && cd build
           
-          # Run CMake and Make. If either fails, the Action will stop.
           if ! cmake ..; then
             echo "::error::CMake failed in $demo_dir"
             exit 1
@@ -49,6 +54,5 @@ jobs:
           
           echo "Successfully built $demo_dir"
           
-          # Return to root for the next iteration
           cd "${GITHUB_WORKSPACE}"
         done
