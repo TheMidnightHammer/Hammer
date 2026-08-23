@@ -13,7 +13,7 @@
 // thanks to https://github.com/ZDev22/ZEngine/blob/main/src/ztext.h for the base implementation
 // and he use this https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c as base implementation 
 
-HammerFont::HammerFont(HammerEngine& eng, const char* fontPath) : engine(eng) {
+HammerFont::HammerFont(HammerEngine* eng, const char* fontPath) : engine(eng) {
     FILE* fontFile = fopen(fontPath, "rb");
     fseek(fontFile, 0, SEEK_END);
     unsigned int size = ftell(fontFile);
@@ -37,7 +37,7 @@ HammerFont::HammerFont(HammerEngine& eng, const char* fontPath) : engine(eng) {
     fontSize++;
 }
 
-HammerCustomTexture* HammerFont::createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter) {
+HammerCustomTexture* HammerFont::createTextPtr(HammerEngine* engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter) {
     unsigned char* bitmap = (unsigned char*)calloc(1, b_w * b_h);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
@@ -78,7 +78,7 @@ HammerCustomTexture* HammerFont::createTextPtr(HammerEngine& engine, const char*
     return output;
 }
 
-HammerCustomTexture* HammerFont::createFontAtlasPtr(HammerEngine& engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter) {
+HammerCustomTexture* HammerFont::createFontAtlasPtr(HammerEngine* engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter) {
     const char* word = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     unsigned int numChars = strlen(word);
 

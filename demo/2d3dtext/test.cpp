@@ -15,9 +15,9 @@ int main() {
 
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine engine(info);
-    engine.initWindow();
-    engine.initVulkan();
+    HammerEngine* engine = new HammerEngine(info);
+    engine->initWindow();
+    engine->initVulkan();
 
     std::string vertShader = "shaders/vert.spv";
     std::string fragShader = "shaders/frag.spv";
@@ -27,27 +27,29 @@ int main() {
 
     HammerCustomTexture* helloWorldTex = font.createTextPtr(engine, "wow, facy text ? -TheMidnightHammer", 0, 48, 2048, 256, HammerTextureFilter::Linear);
     //                                                                                 X     Y    W     H
-    HammerMesh* textMesh = engine.CreateTextQuad(engine, textPipeline, helloWorldTex, 0.0f, 0.0f, 8.0f, 2.0f);
+    HammerMesh* textMesh = engine->CreateTextQuad(engine, textPipeline, helloWorldTex, 0.0f, 0.0f, 8.0f, 2.0f);
 
-    engine.addMeshRenderer(textMesh);
+    engine->addMeshRenderer(textMesh);
 
-    engine.drawPassStart();
-    while (!glfwWindowShouldClose(engine.window)) {
-        engine.updateFrameTimeStart();
+    engine->drawPassStart();
+    while (!glfwWindowShouldClose(engine->window)) {
+        engine->updateFrameTimeStart();
         
-        engine.drawFrame();
+        engine->drawFrame();
 
-        engine.updateCameraDefault3D();
+        engine->updateCameraDefault3D();
 
-        engine.updateFrameTimeEnd();
+        engine->updateFrameTimeEnd();
     }
-    engine.drawPassEnd();
+    engine->drawPassEnd();
     
     // Clean up allocated memory instead of .reset()
     delete helloWorldTex;
     delete textPipeline;
     
-    engine.cleanup();
+    engine->cleanup();
+
+    delete engine;
 
     return EXIT_SUCCESS;
 }

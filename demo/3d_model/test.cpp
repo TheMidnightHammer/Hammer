@@ -14,9 +14,9 @@
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
+    HammerEngine* Engine = new HammerEngine(info);
+    Engine->initWindow();
+    Engine->initVulkan();
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
@@ -32,26 +32,28 @@ int main() {
     // Allocate mesh with new and push the raw pointer to the engine
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, dirtTexture, model.vertexData, model.indexData);
     
-    Engine.meshs.push_back(myMesh);
+    Engine->meshs.push_back(myMesh);
 
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    Engine->drawPassStart();
+    while (!glfwWindowShouldClose(Engine->window)) {
+        Engine->updateFrameTimeStart();
 
-        Engine.updateCameraDefault3D();
+        Engine->updateCameraDefault3D();
         
-        Engine.drawFrame(); 
+        Engine->drawFrame(); 
         
-        Engine.updateFrameTimeEnd();
+        Engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    Engine->drawPassEnd();
 
     // Clean up allocated resources
     delete mainPipeline;
     delete dirtTexture;
     // myMesh is cleaned up inside Engine.cleanup() via the loop we added earlier
 
-    Engine.cleanup();
+    Engine->cleanup();
+
+    delete Engine;
 
     return EXIT_SUCCESS;
 }

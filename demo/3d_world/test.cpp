@@ -82,9 +82,9 @@ void generateCubeGrid(std::vector<Vertex>* outVertices, std::vector<uint32_t>* o
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
+    HammerEngine* Engine = new HammerEngine(info);
+    Engine->initWindow();
+    Engine->initVulkan();
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
@@ -101,26 +101,28 @@ int main() {
 
     // Allocate raw pointer for mesh and add to engine vector
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, dirtTexture, vertices, indices);
-    Engine.meshs.push_back(myMesh);
+    Engine->meshs.push_back(myMesh);
 
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    Engine->drawPassStart();
+    while (!glfwWindowShouldClose(Engine->window)) {
+        Engine->updateFrameTimeStart();
 
-        Engine.updateCameraDefault3D();
+        Engine->updateCameraDefault3D();
         
-        Engine.drawFrame(); 
+        Engine->drawFrame(); 
         
-        Engine.updateFrameTimeEnd();
+        Engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    Engine->drawPassEnd();
 
     // Clean up allocated memory
     delete mainPipeline;
     delete dirtTexture;
     
     // Engine.cleanup() will delete the pointers inside Engine.meshs
-    Engine.cleanup();
+    Engine->cleanup();
+
+    delete Engine;
 
     return EXIT_SUCCESS;
 }

@@ -15,12 +15,12 @@
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
+    HammerEngine* Engine = new HammerEngine(info);
+    Engine->initWindow();
+    Engine->initVulkan();
 
-    Engine.cameraPosition = glm::vec3(5.0f, 5.0f, 15.0f);
-    Engine.cameraFront = glm::normalize(glm::vec3(0.0f, -0.5f, -1.0f));
+    Engine->cameraPosition = glm::vec3(5.0f, 5.0f, 15.0f);
+    Engine->cameraFront = glm::normalize(glm::vec3(0.0f, -0.5f, -1.0f));
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
@@ -45,7 +45,7 @@ int main() {
 
     // Calculate exact byte size of the vector payload
     VkDeviceSize bufferSize = sizeof(Light);
-    HammerSSBO* my_SSBO = new HammerSSBO(&Engine, &light, bufferSize);
+    HammerSSBO* my_SSBO = new HammerSSBO(Engine, &light, bufferSize);
     
     // Allocate pipeline with new
     HammerPipeline* mainPipeline = new HammerPipeline(Engine, vPath, fPath, 1, true, my_SSBO);
@@ -58,13 +58,13 @@ int main() {
     // Allocate mesh with new and push the raw pointer to the engine
     HammerMesh* myMesh1 = new HammerMesh(Engine, mainPipeline, dirtTexture, model.vertexData, model.indexData);
     
-    Engine.meshs.push_back(myMesh1);
+    Engine->meshs.push_back(myMesh1);
 
     HammerAsyncLogger logger;
 
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    Engine->drawPassStart();
+    while (!glfwWindowShouldClose(Engine->window)) {
+        Engine->updateFrameTimeStart();
 
         static auto startTime = std::chrono::high_resolution_clock::now();
 
@@ -81,13 +81,13 @@ int main() {
         my_SSBO->updateData(&light, bufferSize);
 
 
-        Engine.updateCameraDefault3D();
+        Engine->updateCameraDefault3D();
         
-        Engine.drawFrame(); 
+        Engine->drawFrame(); 
         
-        Engine.updateFrameTimeEnd();
+        Engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    Engine->drawPassEnd();
 
     // Clean up allocated resources
     delete mainPipeline;
@@ -95,7 +95,9 @@ int main() {
     delete my_SSBO;
     // myMesh is cleaned up inside Engine.cleanup() via the loop we added earlier
 
-    Engine.cleanup();
+    Engine->cleanup();
+
+    delete Engine;
 
     return EXIT_SUCCESS;
 }

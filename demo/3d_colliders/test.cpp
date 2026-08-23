@@ -14,11 +14,11 @@
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
+    HammerEngine* Engine = new HammerEngine(info);
+    Engine->initWindow();
+    Engine->initVulkan();
 
-    Engine.cameraPosition = glm::vec3(0, 5, 0);
+    Engine->cameraPosition = glm::vec3(0, 5, 0);
 
     HammerTexture* mainTexture = new HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);
 
@@ -80,35 +80,37 @@ int main() {
         localVertices, 
         localIndices
     );
-    Engine.meshs.push_back(sceneMesh);
+    Engine->meshs.push_back(sceneMesh);
 
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    Engine->drawPassStart();
+    while (!glfwWindowShouldClose(Engine->window)) {
+        Engine->updateFrameTimeStart();
 
         // Collision logic
         HammerRectCubeF cube{0, 0, 0, 1, 1, 1};
         HammerRectCubeF camera{
-            Engine.cameraPosition.x,
-            Engine.cameraPosition.y - 1.0f,
-            Engine.cameraPosition.z, 
+            Engine->cameraPosition.x,
+            Engine->cameraPosition.y - 1.0f,
+            Engine->cameraPosition.z, 
             1, 1, 1
         };
 
         bool isColliding = camera.HammerRectCollideCubeF(cube);
         
-        Engine.updateCameraDefaultGravety3D(isColliding);
+        Engine->updateCameraDefaultGravety3D(isColliding);
         
-        Engine.drawFrame();
+        Engine->drawFrame();
 
-        Engine.updateFrameTimeEnd();
+        Engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    Engine->drawPassEnd();
 
     delete mainTexture;
     delete mainPipeline;
     
-    Engine.cleanup();
+    Engine->cleanup();
+
+    delete Engine;
 
     return EXIT_SUCCESS;
 }

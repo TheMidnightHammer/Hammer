@@ -15,12 +15,12 @@
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
+    HammerEngine* engine = new HammerEngine(info);
+    engine->initWindow();
+    engine->initVulkan();
 
     // Use raw pointers with the 'new' keyword
-    HammerTexture* mainTexture = new HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);
+    HammerTexture* mainTexture = new HammerTexture(engine, "textures/texture.png", HammerTextureFilter::Nearest);
 
     HammerRectSquareF player{0, 2, 1, 1};
 
@@ -38,38 +38,40 @@ int main() {
     std::string vShader = "shaders/vert.spv";
     std::string fShader = "shaders/frag.spv";
 
-    HammerPipeline* mainPipeline = new HammerPipeline(Engine, vShader, fShader, 1, true, NULL);
+    HammerPipeline* mainPipeline = new HammerPipeline(engine, vShader, fShader, 1, true, NULL);
     
-    HammerMesh* sceneMesh = new HammerMesh(Engine, mainPipeline, mainTexture, getVertices(player), localIndices);
+    HammerMesh* sceneMesh = new HammerMesh(engine, mainPipeline, mainTexture, getVertices(player), localIndices);
 
     // Push the raw pointer directly
-    Engine.meshs.push_back(sceneMesh);
+    engine->meshs.push_back(sceneMesh);
 
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    engine->drawPassStart();
+    while (!glfwWindowShouldClose(engine->window)) {
+        engine->updateFrameTimeStart();
 
         bool moved = false;
-        if (glfwGetKey(Engine.window, GLFW_KEY_I) == GLFW_PRESS) { player.y += 0.1f; moved = true; }
-        if (glfwGetKey(Engine.window, GLFW_KEY_K) == GLFW_PRESS) { player.y -= 0.1f; moved = true; }
-        if (glfwGetKey(Engine.window, GLFW_KEY_J) == GLFW_PRESS) { player.x -= 0.1f; moved = true; }
-        if (glfwGetKey(Engine.window, GLFW_KEY_L) == GLFW_PRESS) { player.x += 0.1f; moved = true; }
+        if (glfwGetKey(engine->window, GLFW_KEY_I) == GLFW_PRESS) { player.y += 0.1f; moved = true; }
+        if (glfwGetKey(engine->window, GLFW_KEY_K) == GLFW_PRESS) { player.y -= 0.1f; moved = true; }
+        if (glfwGetKey(engine->window, GLFW_KEY_J) == GLFW_PRESS) { player.x -= 0.1f; moved = true; }
+        if (glfwGetKey(engine->window, GLFW_KEY_L) == GLFW_PRESS) { player.x += 0.1f; moved = true; }
 
         if (moved) {
             sceneMesh->position = glm::vec3(player.x, player.y, 0);
         }
 
-        Engine.updateCameraDefault3D();
-        Engine.drawFrame();
-        Engine.updateFrameTimeEnd();
+        engine->updateCameraDefault3D();
+        engine->drawFrame();
+        engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    engine->drawPassEnd();
 
     // Clean up allocated memory instead of .reset()
     delete mainTexture;
     delete mainPipeline;
     
-    Engine.cleanup();
+    engine->cleanup();
+
+    delete engine;
 
     return EXIT_SUCCESS;
 }

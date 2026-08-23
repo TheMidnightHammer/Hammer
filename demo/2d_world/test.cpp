@@ -16,10 +16,10 @@
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
-    Engine.InitImgui();
+    HammerEngine* Engine = new HammerEngine(info);
+    Engine->initWindow();
+    Engine->initVulkan();
+    Engine->InitImgui();
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
@@ -52,14 +52,14 @@ int main() {
         localVertices, 
         localIndices
     );
-    Engine.meshs.push_back(sceneMesh);
+    Engine->meshs.push_back(sceneMesh);
 
     // --- Main Loop ---
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    Engine->drawPassStart();
+    while (!glfwWindowShouldClose(Engine->window)) {
+        Engine->updateFrameTimeStart();
 
-        Engine.updateCameraDefault2D();
+        Engine->updateCameraDefault2D();
 
         ImGui_ImplVulkan_NewFrame();
         ImGui_ImplGlfw_NewFrame();
@@ -67,7 +67,7 @@ int main() {
 
         ImGui::Begin("hammer is framework now, blah blah blah");
         ImGui::Text("heheh do wahtever u want >:}");
-        std::string temp_str = "FPS: " + std::to_string(Engine.FPS);
+        std::string temp_str = "FPS: " + std::to_string(Engine->FPS);
     
         const char* c_str = temp_str.c_str();
 
@@ -77,17 +77,19 @@ int main() {
 
         ImGui::Render();
         
-        Engine.drawFrame();
+        Engine->drawFrame();
 
-        Engine.updateFrameTimeEnd();
+        Engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    Engine->drawPassEnd();
     
     // Clean up allocated memory instead of .reset()
     delete mainTexture;
     delete mainPipeline;
     
-    Engine.cleanup();
+    Engine->cleanup();
+
+    delete Engine;
 
     return EXIT_SUCCESS;
 }

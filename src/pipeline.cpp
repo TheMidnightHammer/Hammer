@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 HammerPipeline::HammerPipeline(
-    HammerEngine& engine, 
+    HammerEngine* engine, 
     std::string& vertPath, 
     std::string& fragPath,
     int renderTriangleMod,
@@ -23,11 +23,11 @@ HammerPipeline::HammerPipeline(
 HammerPipeline::~HammerPipeline() {
 
     if(graphicsPipeline != VK_NULL_HANDLE){
-        vkDestroyPipeline(hammerEngine.getDevice(), graphicsPipeline, nullptr);
+        vkDestroyPipeline(hammerEngine->getDevice(), graphicsPipeline, nullptr);
         graphicsPipeline = VK_NULL_HANDLE;
     }
     if(pipelineLayout != VK_NULL_HANDLE){
-        vkDestroyPipelineLayout(hammerEngine.getDevice(), pipelineLayout, nullptr);
+        vkDestroyPipelineLayout(hammerEngine->getDevice(), pipelineLayout, nullptr);
         pipelineLayout = VK_NULL_HANDLE;
     }
 }
@@ -38,11 +38,11 @@ void HammerPipeline::createGraphicsPipeline(
     int renderTriangleMod,
     bool triangleRender2SideMode) {
 
-    auto vertShaderCode = hammerEngine.readFile(vertPath);
-    auto fragShaderCode = hammerEngine.readFile(fragPath);
+    auto vertShaderCode = hammerEngine->readFile(vertPath);
+    auto fragShaderCode = hammerEngine->readFile(fragPath);
 
-    VkShaderModule vertShaderModule = hammerEngine.createShaderModule(vertShaderCode);
-    VkShaderModule fragShaderModule = hammerEngine.createShaderModule(fragShaderCode);
+    VkShaderModule vertShaderModule = hammerEngine->createShaderModule(vertShaderCode);
+    VkShaderModule fragShaderModule = hammerEngine->createShaderModule(fragShaderCode);
 
     VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
     vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -124,12 +124,12 @@ void HammerPipeline::createGraphicsPipeline(
     pushConstantRange.size = sizeof(glm::mat4);
 
     std::vector<VkDescriptorSetLayout> setLayouts = {
-        hammerEngine.getGlobalSetLayout(), 
-        hammerEngine.getTextureSetLayout()
+        hammerEngine->getGlobalSetLayout(), 
+        hammerEngine->getTextureSetLayout()
     };
 
     if (this->ssbo != nullptr) {
-        setLayouts.push_back(hammerEngine.getSsboSetLayout());
+        setLayouts.push_back(hammerEngine->getSsboSetLayout());
     }
 
     VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -140,7 +140,7 @@ void HammerPipeline::createGraphicsPipeline(
     pipelineLayoutInfo.pushConstantRangeCount = 1;
     pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
 
-    if (vkCreatePipelineLayout(hammerEngine.getDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
+    if (vkCreatePipelineLayout(hammerEngine->getDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create pipeline layout!");
     }
 
@@ -157,15 +157,15 @@ void HammerPipeline::createGraphicsPipeline(
     pipelineInfo.pColorBlendState = &colorBlending;
     pipelineInfo.pDynamicState = &dynamicState;
     pipelineInfo.layout = pipelineLayout;
-    pipelineInfo.renderPass = hammerEngine.getRenderPass();
+    pipelineInfo.renderPass = hammerEngine->getRenderPass();
     pipelineInfo.subpass = 0;
 
-    if (vkCreateGraphicsPipelines(hammerEngine.getDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
+    if (vkCreateGraphicsPipelines(hammerEngine->getDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline) != VK_SUCCESS) {
         throw std::runtime_error("failed to create graphics pipeline!");
     }
 
-    vkDestroyShaderModule(hammerEngine.getDevice(), fragShaderModule, nullptr);
-    vkDestroyShaderModule(hammerEngine.getDevice(), vertShaderModule, nullptr);
+    vkDestroyShaderModule(hammerEngine->getDevice(), fragShaderModule, nullptr);
+    vkDestroyShaderModule(hammerEngine->getDevice(), vertShaderModule, nullptr);
 }
 
 void HammerPipeline::bind(VkCommandBuffer commandBuffer) {

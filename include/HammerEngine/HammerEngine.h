@@ -145,7 +145,7 @@ enum class HammerTextureFilter {
 
 class HammerCustomTexture {
 public:
-    HammerCustomTexture(HammerEngine& Engine, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter);
+    HammerCustomTexture(HammerEngine* Engine, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter);
     ~HammerCustomTexture();
 
     HammerCustomTexture(const HammerCustomTexture&) = delete;
@@ -159,7 +159,7 @@ private:
     VkImageView imageView = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
 
-    HammerEngine& engine;
+    HammerEngine* engine;
 
     void createTextureImage(unsigned char* pixels, uint32_t texWidth, uint32_t texHeight);
     void createTextureSampler(HammerTextureFilter filter);
@@ -174,9 +174,9 @@ struct Char {
 
 class HammerFont {
 public:
-    HammerFont(HammerEngine& engine,const char* fontPath);
-    HammerCustomTexture* createTextPtr(HammerEngine& engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
-    HammerCustomTexture* createFontAtlasPtr(HammerEngine& engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
+    HammerFont(HammerEngine* engine,const char* fontPath);
+    HammerCustomTexture* createTextPtr(HammerEngine* engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
+    HammerCustomTexture* createFontAtlasPtr(HammerEngine* engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
 
     Char charCoor(int index, int totalChars, float xOffset, float yOffset, float charWidth, float charHeight, const char name);
 
@@ -293,7 +293,7 @@ private:
     stbtt_fontinfo* fonts = NULL;
     unsigned short fontSize = 0;
 
-    HammerEngine& engine;
+    HammerEngine* engine;
 };
 
 //i dont really undersand this shit
@@ -318,7 +318,7 @@ public:
 
 class HammerTexture {
 public:
-    HammerTexture(HammerEngine& engine, const std::string& path, HammerTextureFilter filter);
+    HammerTexture(HammerEngine* engine, const std::string& path, HammerTextureFilter filter);
     ~HammerTexture();
 
     HammerTexture(const HammerTexture&) = delete;
@@ -332,7 +332,7 @@ private:
     VkImageView imageView = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
 
-    HammerEngine& engine;
+    HammerEngine* engine;
 
     void createTextureImage(const std::string& path);
     void createTextureSampler(HammerTextureFilter filter);
@@ -341,7 +341,7 @@ private:
 
 class HammerMesh {
 public:
-    HammerMesh(HammerEngine& engine, 
+    HammerMesh(HammerEngine* engine, 
                 HammerPipeline* pipeline, 
                 HammerTexture* texture, 
                 const std::vector<Vertex>& vertices, 
@@ -382,7 +382,7 @@ private:
     VkBuffer stagingBuffer = VK_NULL_HANDLE;
     VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
 
-    HammerEngine& engine;
+    HammerEngine* engine;
 
     HammerPipeline* pipeline;
     HammerTexture* texture;
@@ -398,7 +398,7 @@ private:
 class HammerPipeline {
 public:
     HammerPipeline(
-        HammerEngine& engine, 
+        HammerEngine* engine, 
         std::string& vertPath, 
         std::string& fragPath,
         int renderTriangleMod,
@@ -424,7 +424,7 @@ public:
         int renderTriangleMod,
         bool triangleRender2SideMode);
 
-    HammerEngine& hammerEngine;
+    HammerEngine* hammerEngine;
     VkPipeline graphicsPipeline;
     VkPipelineLayout pipelineLayout;    
     HammerSSBO* ssbo = nullptr;
@@ -519,7 +519,7 @@ public:
 
     void removeMeshRenderer(int index);
 
-    HammerMesh* CreateTextQuad(HammerEngine& engine, HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height);
+    HammerMesh* CreateTextQuad(HammerEngine* engine, HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height);
 
     void setMaxBufferSize(VkDeviceSize size);
 

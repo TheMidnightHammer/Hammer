@@ -14,9 +14,9 @@
 int main() {
     HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
-    HammerEngine Engine(info);
-    Engine.initWindow();
-    Engine.initVulkan();
+    HammerEngine* Engine = new HammerEngine(info);
+    Engine->initWindow();
+    Engine->initVulkan();
 
     std::string vPath = "shaders/vert.spv";
     std::string fPath = "shaders/frag.spv";
@@ -58,36 +58,38 @@ int main() {
         localIndices
     );
 
-    Engine.meshs.push_back(sceneMesh);
-    Engine.meshs.push_back(sceneMesh2);
+    Engine->meshs.push_back(sceneMesh);
+    Engine->meshs.push_back(sceneMesh2);
 
     sceneMesh2->position.x = 2;
-    Engine.cameraPosition.z = 5;
+    Engine->cameraPosition.z = 5;
 
     // --- Main Loop ---
-    Engine.drawPassStart();
-    while (!glfwWindowShouldClose(Engine.window)) {
-        Engine.updateFrameTimeStart();
+    Engine->drawPassStart();
+    while (!glfwWindowShouldClose(Engine->window)) {
+        Engine->updateFrameTimeStart();
 
-        if(glfwGetKey(Engine.window, GLFW_KEY_I)){
+        if(glfwGetKey(Engine->window, GLFW_KEY_I)){
             sceneMesh2->draw = true;
         }
-        if(glfwGetKey(Engine.window, GLFW_KEY_O)){
+        if(glfwGetKey(Engine->window, GLFW_KEY_O)){
             sceneMesh2->draw = false;
         }
 
-        Engine.updateCameraDefault2D();
+        Engine->updateCameraDefault2D();
         
-        Engine.drawFrame();
+        Engine->drawFrame();
 
-        Engine.updateFrameTimeEnd();
+        Engine->updateFrameTimeEnd();
     }
-    Engine.drawPassEnd();
+    Engine->drawPassEnd();
     
     delete mainTexture;
     delete mainPipeline;
     
-    Engine.cleanup();
+    Engine->cleanup();
+
+    delete Engine;
 
     return EXIT_SUCCESS;
 }
