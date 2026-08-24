@@ -20,6 +20,8 @@ Hammer supports for all major Linux distros, windows (In testing) and Chromebook
 2. More physics
 3. Compute shaders
 4. Multi-threading support (recording command buffers on different cores, Help needed)
+5. Instancing
+6. GFX via Comput Shaders
 
 # What does Hammer support?
 
