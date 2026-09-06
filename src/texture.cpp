@@ -14,7 +14,7 @@ HammerCustomTexture::HammerCustomTexture(HammerEngine* eng, unsigned char* bitma
     : engine(eng) {
     
     createTextureImage(bitmapData, width, height);
-    imageView = engine->createImageView(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+    imageView = engine->createImageView(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
     createTextureSampler(filter);
     
     allocateDescriptorSet(); 
@@ -55,16 +55,16 @@ void HammerCustomTexture::createTextureImage(unsigned char* pixels, uint32_t tex
 
     free(rgbaPixels);
 
-    engine->createImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, 
+    engine->createImage(texWidth, texHeight, 1, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, 
                        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
 
     engine->transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, 
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1);// change to mipLevels when font gets mip maps ig
     engine->copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), 
                              static_cast<uint32_t>(texHeight));
     engine->transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, 1); // change to mipLevels when font gets mip maps ig
 
     vkQueueWaitIdle(engine->getGraphicsQueue());
 
@@ -85,7 +85,7 @@ void HammerCustomTexture::allocateDescriptorSet() {
     }
 
     VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
     imageInfo.imageView = imageView;
     imageInfo.sampler = sampler;
 
@@ -154,11 +154,13 @@ void HammerTexture::createTextureImage(const std::string& path) {
         throw std::runtime_error("failed to load texture image: " + path);
     }
 
+    mipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1;
+
     VkBuffer stagingBuffer;
     VkDeviceMemory stagingBufferMemory;
     engine->createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, 
-                        VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
-                        stagingBuffer, stagingBufferMemory);
+                         VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, 
+                         stagingBuffer, stagingBufferMemory);
 
     void* data;
     vkMapMemory(engine->getDevice(), stagingBufferMemory, 0, imageSize, 0, &data);
@@ -167,19 +169,25 @@ void HammerTexture::createTextureImage(const std::string& path) {
 
     stbi_image_free(pixels);
 
-    engine->createImage(texWidth, texHeight, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, 
-                       VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
-                       VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
+    engine->createImage(texWidth, texHeight, mipLevels, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL,
+                        VK_IMAGE_USAGE_TRANSFER_SRC_BIT | 
+                        VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, 
+                        VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, image, imageMemory);
 
+    // Transition all mip levels to TRANSFER_DST_OPTIMAL so copyBufferToImage and blitting work
     engine->transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, 
-                                 VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-    engine->copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), 
-                             static_cast<uint32_t>(texHeight));
-    engine->transitionImageLayout(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 
-                                 VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
+                                  VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
 
+    // Copy base mip level data from staging buffer
+    engine->copyBufferToImage(stagingBuffer, image, static_cast<uint32_t>(texWidth), 
+                              static_cast<uint32_t>(texHeight));
+
+    // Cleanup staging buffer
     vkDestroyBuffer(engine->getDevice(), stagingBuffer, nullptr);
     vkFreeMemory(engine->getDevice(), stagingBufferMemory, nullptr);
+
+    // generateMipmaps transitions all levels step-by-step into SHADER_READ_ONLY_OPTIMAL
+    engine->generateMipmaps(image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels);
 }
 
 void HammerTexture::allocateDescriptorSet() {
@@ -240,6 +248,9 @@ void HammerTexture::createTextureSampler(HammerTextureFilter filter) {
     samplerInfo.compareEnable = VK_FALSE;
     samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
     samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
+    samplerInfo.minLod = 0.0f; // Optional
+    samplerInfo.maxLod = VK_LOD_CLAMP_NONE;
+    samplerInfo.mipLodBias = 0.0f; // Optional
 
     if (vkCreateSampler(engine->getDevice(), &samplerInfo, nullptr, &sampler) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture sampler!");
@@ -250,7 +261,7 @@ HammerTexture::HammerTexture(HammerEngine* eng, const std::string& path, HammerT
     : engine(eng) {
     
     createTextureImage(path);
-    imageView = engine->createImageView(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+    imageView = engine->createImageView(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels);
     createTextureSampler(filter);
     
     allocateDescriptorSet(); 
