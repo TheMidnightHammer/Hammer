@@ -2,6 +2,9 @@
 Hammer is an open source engine using Vulkan as back-end.
 It supports simple collision detection, model loading, there is an example of all features in the demo folder.
 
+Want to chat with the lead dev?
+https://discord.gg/TRSJ8WD7Xr
+
 [Showoff.webm](https://github.com/user-attachments/assets/d3d87ad2-bde6-4431-944c-7280afff7d88)
 
 # The goal of Hammer Engine
