@@ -635,34 +635,60 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
 }
 
 
-void HammerMesh::updateBuffers(std::vector<Vertex> vertexData, std::vector<uint32_t> indexData) {
-    VkDeviceSize vertexSize = sizeof(Vertex) * vertexData.size();
-    VkDeviceSize indexSize = sizeof(uint32_t) * indexData.size();
-    this->indexCount = static_cast<uint32_t>(indexData.size());
+void HammerMesh::updateBuffers(std::vector<Vertex> &newVertexData, std::vector<uint32_t> &newIndexData) {
+    VkDeviceSize newVertexSize = sizeof(Vertex) * newVertexData.size();
+    VkDeviceSize newIndexSize = sizeof(uint32_t) * newVertexData.size();
 
-    if (vertexSize == 0 || indexSize == 0) {
-        std::cerr << "WARNING: vertex size and/or index size is 0\n";
+    VkDeviceSize oldVertexSize = sizeof(Vertex) * this->vertexData.size();
+    VkDeviceSize oldIndexSize = sizeof(uint32_t) * this->indexData.size();
+
+    if(newVertexSize >= oldVertexSize || newIndexSize >= oldIndexSize) {
+        std::cerr << "WARNING: Hammer must recreate recreate buffers to fit buffer data update, this may cause performance spikes !!!\n";
         return;
     }
 
+    this->indexCount = static_cast<uint32_t>(indexData.size());
+
+    if (newVertexSize == 0 || newIndexSize == 0) {
+        std::cerr << "WARNING: vertex size and/or index size is 0\n";
+
+        if (vertexBuffer != VK_NULL_HANDLE) { // clean up the buffer before recreating it
+            vkDestroyBuffer(engine->getDevice(), vertexBuffer, nullptr);
+        }
+        if (vertexBufferMemory != VK_NULL_HANDLE) {
+            vkFreeMemory(engine->getDevice(), vertexBufferMemory, nullptr);
+        }
+        if (indexBuffer != VK_NULL_HANDLE) {
+            vkDestroyBuffer(engine->getDevice(), indexBuffer, nullptr);
+        }
+        if (indexBufferMemory != VK_NULL_HANDLE) {
+            vkFreeMemory(engine->getDevice(), indexBufferMemory, nullptr);
+        }
+
+        this->createVertexBuffer(newVertexData);
+        this->createIndexBuffer(newIndexData);
+
+        return; // returning because recreating the buffers would have put new data in them
+    }
+
     void* vData;
-    vkMapMemory(engine->getDevice(), engine->stagingBufferMemory, 0, vertexSize, 0, &vData);
-    memcpy(vData, vertexData.data(), (size_t)vertexSize);
+    vkMapMemory(engine->getDevice(), engine->stagingBufferMemory, 0, newVertexSize, 0, &vData);
+    memcpy(vData, vertexData.data(), (size_t)newVertexSize);
     vkUnmapMemory(engine->getDevice(), engine->stagingBufferMemory);
 
     void* iData;
-    vkMapMemory(engine->getDevice(), engine->stagingBuffer2Memory, 0, indexSize, 0, &iData);
-    memcpy(iData, indexData.data(), (size_t)indexSize);
+    vkMapMemory(engine->getDevice(), engine->stagingBuffer2Memory, 0, newIndexSize, 0, &iData);
+    memcpy(iData, indexData.data(), (size_t)newIndexSize);
     vkUnmapMemory(engine->getDevice(), engine->stagingBuffer2Memory);
 
     VkCommandBuffer commandBuffer = engine->beginSingleTimeCommands();
 
     VkBufferCopy vertexCopyRegion{};
-    vertexCopyRegion.size = vertexSize;
+    vertexCopyRegion.size = newVertexSize;
     vkCmdCopyBuffer(commandBuffer, engine->stagingBuffer, vertexBuffer, 1, &vertexCopyRegion);
 
     VkBufferCopy indexCopyRegion{};
-    indexCopyRegion.size = indexSize;
+    indexCopyRegion.size = newIndexSize;
     vkCmdCopyBuffer(commandBuffer, engine->stagingBuffer2, indexBuffer, 1, &indexCopyRegion);
 
     engine->endSingleTimeCommands(commandBuffer);
