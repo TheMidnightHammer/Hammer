@@ -637,38 +637,41 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
 
 void HammerMesh::updateBuffers(std::vector<Vertex> &newVertexData, std::vector<uint32_t> &newIndexData) {
     VkDeviceSize newVertexSize = sizeof(Vertex) * newVertexData.size();
-    VkDeviceSize newIndexSize = sizeof(uint32_t) * newVertexData.size();
+    VkDeviceSize newIndexSize = sizeof(uint32_t) * newIndexData.size();
 
     VkDeviceSize oldVertexSize = sizeof(Vertex) * this->vertexData.size();
     VkDeviceSize oldIndexSize = sizeof(uint32_t) * this->indexData.size();
 
     if(newVertexSize >= oldVertexSize || newIndexSize >= oldIndexSize) {
         std::cerr << "WARNING: Hammer must recreate recreate buffers to fit buffer data update, this may cause performance spikes !!!\n";
-        return;
+
+        vkDeviceWaitIdle(engine->getDevice());
+
+        if (vertexBuffer != VK_NULL_HANDLE) {
+            vkDestroyBuffer(engine->getDevice(), vertexBuffer, nullptr);
+            vkFreeMemory(engine->getDevice(), vertexBufferMemory, nullptr);
+        }
+        if (indexBuffer != VK_NULL_HANDLE) {
+            vkDestroyBuffer(engine->getDevice(), indexBuffer, nullptr);
+            vkFreeMemory(engine->getDevice(), indexBufferMemory, nullptr);
+        }
+        this->vertexData = newVertexData;
+        this->indexData = newIndexData;
+        this->indexCount = static_cast<uint32_t>(indexData.size());
+
+        this->createVertexBuffer(newVertexData);
+        this->createIndexBuffer(newIndexData);
+        return; // returning because recreating the buffers would have put new data in them
     }
 
+    this->vertexData = newVertexData;
+    this->indexData = newIndexData;
     this->indexCount = static_cast<uint32_t>(indexData.size());
 
     if (newVertexSize == 0 || newIndexSize == 0) {
         std::cerr << "WARNING: vertex size and/or index size is 0\n";
 
-        if (vertexBuffer != VK_NULL_HANDLE) { // clean up the buffer before recreating it
-            vkDestroyBuffer(engine->getDevice(), vertexBuffer, nullptr);
-        }
-        if (vertexBufferMemory != VK_NULL_HANDLE) {
-            vkFreeMemory(engine->getDevice(), vertexBufferMemory, nullptr);
-        }
-        if (indexBuffer != VK_NULL_HANDLE) {
-            vkDestroyBuffer(engine->getDevice(), indexBuffer, nullptr);
-        }
-        if (indexBufferMemory != VK_NULL_HANDLE) {
-            vkFreeMemory(engine->getDevice(), indexBufferMemory, nullptr);
-        }
-
-        this->createVertexBuffer(newVertexData);
-        this->createIndexBuffer(newIndexData);
-
-        return; // returning because recreating the buffers would have put new data in them
+        return;
     }
 
     void* vData;
