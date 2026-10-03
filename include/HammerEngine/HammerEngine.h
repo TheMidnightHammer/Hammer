@@ -370,7 +370,7 @@ public:
     HammerPipeline* getPipeline() const { return pipeline; }
     HammerTexture* getTexture() const { return texture; }
     
-    void updateBuffers(std::vector<Vertex> vertexData, std::vector<uint32_t> indexData);
+    void updateBuffers(std::vector<Vertex> &newVertexData, std::vector<uint32_t> &newIndexData);
 
     HammerPipeline* GetPipeline();
     HammerTexture* GetTexture();
