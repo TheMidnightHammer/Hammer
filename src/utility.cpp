@@ -38,30 +38,12 @@ void HammerEngine::drawPassEnd(){
     vkDeviceWaitIdle(device);
 }
 
-void HammerEngine::mainLoopTest() {
-    drawPassStart();
-
-    while (!glfwWindowShouldClose(window)) {
-        updateFrameTimeStart();
-
-        updateCameraDefault3D();
-
-        drawFrame();
-
-        updateFrameTimeEnd();
-    }
-
-    drawPassEnd();
-}
-
 void HammerEngine::updateFrameTimeEnd(){
     auto end = std::chrono::high_resolution_clock::now();
     auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     totalFrameTime += frameDuration;
 
     if (currentTime - previousTime >= 1.0) {
-        double averageFrameTime = totalFrameTime.count() / static_cast<double>(frameCount);
-
         FPS = frameCount;
 
         frameCount = 0;

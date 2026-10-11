@@ -43,7 +43,7 @@ int main() {
     HammerMesh* sceneMesh = new HammerMesh(engine, mainPipeline, mainTexture, getVertices(player), localIndices);
 
     // Push the raw pointer directly
-    engine->meshs.push_back(sceneMesh);
+    engine->meshes.push_back(sceneMesh);
 
     engine->drawPassStart();
     while (!glfwWindowShouldClose(engine->window)) {

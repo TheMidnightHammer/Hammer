@@ -58,8 +58,8 @@ int main() {
         localIndices
     );
 
-    Engine->meshs.push_back(sceneMesh);
-    Engine->meshs.push_back(sceneMesh2);
+    Engine->meshes.push_back(sceneMesh);
+    Engine->meshes.push_back(sceneMesh2);
 
     sceneMesh2->position.x = 2;
     Engine->cameraPosition.z = 5;

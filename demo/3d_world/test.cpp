@@ -101,7 +101,7 @@ int main() {
 
     // Allocate raw pointer for mesh and add to engine vector
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, dirtTexture, vertices, indices);
-    Engine->meshs.push_back(myMesh);
+    Engine->meshes.push_back(myMesh);
 
     Engine->drawPassStart();
     while (!glfwWindowShouldClose(Engine->window)) {
@@ -119,7 +119,7 @@ int main() {
     delete mainPipeline;
     delete dirtTexture;
     
-    // Engine.cleanup() will delete the pointers inside Engine.meshs
+    // Engine.cleanup() will delete the pointers inside Engine.meshes
     Engine->cleanup();
 
     delete Engine;

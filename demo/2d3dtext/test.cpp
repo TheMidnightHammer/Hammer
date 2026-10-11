@@ -27,7 +27,7 @@ int main() {
 
     HammerCustomTexture* helloWorldTex = font.createTextPtr(engine, "wow, facy text ? -TheMidnightHammer", 0, 48, 2048, 256, HammerTextureFilter::Linear);
     //                                                                                 X     Y    W     H
-    HammerMesh* textMesh = engine->CreateTextQuad(engine, textPipeline, helloWorldTex, 0.0f, 0.0f, 8.0f, 2.0f);
+    HammerMesh* textMesh = engine->CreateTextQuad(textPipeline, helloWorldTex, 0.0f, 0.0f, 8.0f, 2.0f);
 
     engine->addMeshRenderer(textMesh);
 

@@ -58,7 +58,7 @@ int main() {
     // Allocate mesh with new and push the raw pointer to the engine
     HammerMesh* myMesh1 = new HammerMesh(Engine, mainPipeline, dirtTexture, model.vertexData, model.indexData);
     
-    Engine->meshs.push_back(myMesh1);
+    Engine->meshes.push_back(myMesh1);
 
     HammerAsyncLogger logger;
 

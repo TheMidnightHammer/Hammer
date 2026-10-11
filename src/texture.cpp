@@ -85,7 +85,7 @@ void HammerCustomTexture::allocateDescriptorSet() {
     }
 
     VkDescriptorImageInfo imageInfo{};
-    imageInfo.imageLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
     imageInfo.imageView = imageView;
     imageInfo.sampler = sampler;
 
@@ -128,7 +128,7 @@ void HammerCustomTexture::createTextureSampler(HammerTextureFilter filter) {
     }
 }
 
-HammerMesh* HammerEngine::CreateTextQuad(HammerEngine* engine, HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height) {
+HammerMesh* HammerEngine::CreateTextQuad(HammerPipeline* pipeline, HammerTexture* textTexture, float x, float y, float width, float height) {
     std::vector<Vertex> vertices = {
         {{x,         y,          0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
         {{x + width, y,          0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
@@ -140,7 +140,22 @@ HammerMesh* HammerEngine::CreateTextQuad(HammerEngine* engine, HammerPipeline* p
         0, 1, 2, 
         2, 3, 0
     };
-    return new HammerMesh(engine, pipeline, reinterpret_cast<HammerTexture*>(textTexture), vertices, indices);
+    return new HammerMesh(this, pipeline, textTexture, vertices, indices);
+}
+
+HammerMesh* HammerEngine::CreateTextQuad(HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height) {
+    std::vector<Vertex> vertices = {
+        {{x,         y,          0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{x + width, y,          0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
+        {{x + width, y + height, 0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+        {{x,         y + height, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 0.0f}, {0.0f, 0.0f, 1.0f}}
+    };
+
+    std::vector<uint32_t> indices = {
+        0, 1, 2, 
+        2, 3, 0
+    };
+    return new HammerMesh(this, pipeline, reinterpret_cast<HammerTexture*>(textTexture), vertices, indices);
 }
 
 
@@ -280,6 +295,4 @@ HammerTexture::~HammerTexture() {
     // Note: Descriptor Sets are usually freed automatically when the pool is destroyed i think, well i fucking hope
 }
 
-HammerTexture* HammerMesh::GetTexture() {
-    return this->texture;
-}
+

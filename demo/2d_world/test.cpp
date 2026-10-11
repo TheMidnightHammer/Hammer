@@ -52,7 +52,7 @@ int main() {
         localVertices, 
         localIndices
     );
-    Engine->meshs.push_back(sceneMesh);
+    Engine->meshes.push_back(sceneMesh);
 
     // --- Main Loop ---
     Engine->drawPassStart();

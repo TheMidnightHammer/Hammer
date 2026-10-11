@@ -121,7 +121,7 @@ std::vector<uint32_t> indices = { 0, 1, 2, 2, 3, 0 };
 
 uh no, there is a function to do this i.g some where
 
-`Engine.meshs.push_back(std::make_unique<HammerMesh>(Engine, mainPipeline.get(), mainTexture.get(), vertices, indices));`
+`Engine.meshes.push_back(std::make_unique<HammerMesh>(Engine, mainPipeline.get(), mainTexture.get(), vertices, indices));`
 
 ### 6. The Main Loop
 
@@ -139,7 +139,7 @@ while (!glfwWindowShouldClose(Engine.window)) {
     }
 
     Engine.updateCameraDefault2D(); // Update the camera view
-    Engine.drawFrame();             // Render everything in Engine.meshs
+    Engine.drawFrame();             // Render everything in Engine.meshes
     
     Engine.updateFrameTimeEnd();   // End the frame timer
 }

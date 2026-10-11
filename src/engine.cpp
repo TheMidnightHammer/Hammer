@@ -147,6 +147,13 @@ void HammerEngine::initVulkan() {
 
 void HammerEngine::mouseCallback(double xpos, double ypos) {
 
+    if (firstMouse) {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+        return;
+    }
+
     float xoffset = xpos - lastX;
     float yoffset = lastY - ypos;
     lastX = xpos;
@@ -250,10 +257,10 @@ void HammerEngine::cleanup() {
 
     vkDeviceWaitIdle(device);
 
-    for (HammerMesh* mesh : meshs) {
+    for (HammerMesh* mesh : meshes) {
         delete mesh;
     }
-    meshs.clear();
+    meshes.clear();
 
     if(useImGui){
         ImGui_ImplVulkan_Shutdown();
@@ -341,14 +348,14 @@ void HammerEngine::recreateSwapChain() {
 }
 
 void HammerEngine::removeMeshRenderer(int index){
-    if(index > meshs.size() || index > 0){
-        std::cerr << "Warning,Trying to remove mesh from renderer with index out of range !!!\n";
+    if (index < 0 || static_cast<size_t>(index) >= meshes.size()) {
+        std::cerr << "Warning, trying to remove mesh from renderer with index out of range !!!\n";
         return;
     }
-    HammerMesh* deleteMeshPtr = meshs[index];
+    std::swap(meshes[index], meshes.back());
+    HammerMesh* deleteMeshPtr = meshes.back();
+    meshes.pop_back();
     delete deleteMeshPtr;
-    std::swap(meshs[index], meshs.back());
-    meshs.pop_back();
 }
 
 HammerModel::HammerModel(const std::string& path){
@@ -420,14 +427,10 @@ HammerModel::HammerModel(const std::string& path){
 
 
 void HammerEngine::addMeshRenderer(HammerMesh* mesh) {
-    meshs.push_back(mesh);
+    meshes.push_back(mesh);
 }
 
-HammerPipeline* HammerMesh::GetPipeline() {
-    return this->pipeline;
-}
-
-uint32_t HammerMesh::GetIndexCount() {
+uint32_t HammerMesh::getIndexCount() {
     return indexCount;
 }
 
@@ -1506,7 +1509,7 @@ void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
 
         VkPipeline currentlyBoundPipeline = VK_NULL_HANDLE;
 
-        for (const auto& mesh : meshs) {
+        for (const auto& mesh : meshes) {
             if (!mesh) continue;
 
             HammerPipeline* meshPipeline = mesh->getPipeline();
@@ -1514,17 +1517,6 @@ void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
                 if(meshPipeline->graphicsPipeline != VK_NULL_HANDLE){
                     vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, meshPipeline->graphicsPipeline);
                     currentlyBoundPipeline = meshPipeline->graphicsPipeline;
-
-                    vkCmdBindDescriptorSets(
-                        commandBuffer, 
-                        VK_PIPELINE_BIND_POINT_GRAPHICS,  
-                        meshPipeline->pipelineLayout, 
-                        1,             
-                        1,             
-                        &mesh->GetTexture()->descriptorSet,
-                        0, 
-                        nullptr
-                    );
                 }
             }
 
@@ -1689,15 +1681,15 @@ VkSurfaceFormatKHR HammerEngine::chooseSwapSurfaceFormat(const std::vector<VkSur
 
 VkPresentModeKHR HammerEngine::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
     for (const auto& availablePresentMode : availablePresentModes) {
-        if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
+        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
             return availablePresentMode;
         }
-        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+        if (availablePresentMode == VK_PRESENT_MODE_IMMEDIATE_KHR) {
             return availablePresentMode;
         }
     }
 
-    return VK_PRESENT_MODE_IMMEDIATE_KHR;
+    return availablePresentModes[0];
 }
 
 VkExtent2D HammerEngine::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
@@ -1847,7 +1839,7 @@ bool HammerEngine::checkValidationLayerSupport() {
     return true;
 }
 
- std::vector<char> HammerEngine::readFile(std::string& filename) {
+ std::vector<char> HammerEngine::readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {

@@ -57,7 +57,7 @@ void HammerFont::convertTextToVertexAndIndex(std::vector<Vertex>* verticesToAdd,
             charXOffset = 0.0f;
             continue;
         }
-        for(int i = 0; i < 95; i++){
+        for(int i = 0; i < kPrintableAsciiCount; i++){
             if(allCharVectors[i].charName == currentLookingChar) {
                 if(currentLookingChar == ' '){
                     charXOffset += 1.0f;

@@ -32,7 +32,7 @@ int main() {
     // Allocate mesh with new and push the raw pointer to the engine
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, dirtTexture, model.vertexData, model.indexData);
     
-    Engine->meshs.push_back(myMesh);
+    Engine->meshes.push_back(myMesh);
 
     Engine->drawPassStart();
     while (!glfwWindowShouldClose(Engine->window)) {

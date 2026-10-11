@@ -69,7 +69,7 @@ int main() {
 
     // Create and store mesh
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, boxTexture, vertices, indices);
-    Engine->meshs.push_back(myMesh);
+    Engine->meshes.push_back(myMesh);
 
     myMesh->updateBuffers(vertices, indices);
 
@@ -95,7 +95,7 @@ int main() {
     delete boxTexture;
     delete mainPipeline;
 
-    // Engine.cleanup() will handle deleting all pointers in Engine.meshs
+    // Engine.cleanup() will handle deleting all pointers in Engine.meshes
     Engine->cleanup();
 
     delete Engine;

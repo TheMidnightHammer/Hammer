@@ -63,25 +63,25 @@ void HammerEngine::updateCameraDefaultGravety3D(bool fall){
     float rightZ = -cosf(yawRad + 3.14159265f / 2.0f);
 
     // W - forward
-    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
         cameraPosition.x += forwardX * velocity;
         cameraPosition.z += forwardZ * velocity;
     }
 
     // S - backward
-    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
         cameraPosition.x -= forwardX * velocity;
         cameraPosition.z -= forwardZ * velocity;
     }
 
-    // A - strafe left (opposite of right)
-    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+    // A - strafe left
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
         cameraPosition.x -= rightX * velocity;
         cameraPosition.z -= rightZ * velocity;
     }
 
     // D - strafe right
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
         cameraPosition.x += rightX * velocity;
         cameraPosition.z += rightZ * velocity;
     }
