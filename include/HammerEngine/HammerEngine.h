@@ -462,8 +462,6 @@ public:
 
     std::vector<HammerMesh*> meshes;
 
-    int MaxTextures = 1000;
-
     GLFWwindow* window; // GLFW window
 
     GLFWmonitor* targetMonitor = nullptr;
@@ -586,7 +584,7 @@ public:
         return ssboSetLayout;
     }
 
-
+    // used for updating buffers super fast and avoiding buffer creating overhead
     VkBuffer stagingBuffer = VK_NULL_HANDLE;
     VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
     VkDeviceSize stagingBufferSize = 0;
@@ -596,6 +594,8 @@ public:
     VkDeviceSize stagingBuffer2Size = 0;
 
 private:
+
+    int MaxTextures = 1000;
 
     double currentTime = glfwGetTime();
     std::chrono::time_point<std::chrono::high_resolution_clock> start;

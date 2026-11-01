@@ -648,7 +648,10 @@ void HammerMesh::updateBuffers(std::vector<Vertex> &newVertexData, std::vector<u
     if(newVertexSize >= oldVertexSize || newIndexSize >= oldIndexSize) {
         std::cerr << "WARNING: Hammer must recreate recreate buffers to fit buffer data update, this may cause performance spikes !!!\n";
 
-        vkDeviceWaitIdle(engine->getDevice());
+
+        // Scary !!!
+        // but we need speed, a lot of speed
+        //vkDeviceWaitIdle(engine->getDevice());
 
         if (vertexBuffer != VK_NULL_HANDLE) {
             vkDestroyBuffer(engine->getDevice(), vertexBuffer, nullptr);
