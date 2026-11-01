@@ -7,6 +7,8 @@
 
 #include "../include/HammerEngine/HammerEngine.h"
 #include "../lib/stb_truetype.h"
+
+#define STB_IMAGE_IMPLEMENTATION
 #include "../lib/stb_image.h"
 
 

@@ -34,6 +34,11 @@ void HammerEngine::initWindow() {
     // glfwMakeContextCurrent(window) this is a opengl command and i was calling this in vulkan, yikks
 }
 
+void HammerEngine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+    auto app = reinterpret_cast<HammerEngine*>(glfwGetWindowUserPointer(window));
+    app->framebufferResized = true;
+}
+
 void HammerEngine::drawPassEnd(){
     vkDeviceWaitIdle(device);
 }

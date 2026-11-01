@@ -8,17 +8,25 @@ project(voxel_Engine VERSION 2.0)
 
 set(SOURCE_FILES
     test.cpp
-    ../../src/engine.cpp
-    ../../src/utility.cpp
-    ../../src/camera.cpp
-    ../../src/rect.cpp
-    ../../src/buffers.cpp
-    ../../src/pipeline.cpp
-    ../../src/ssbo.cpp
+    ../../src/Engine.cpp
+    ../../src/EngineInstance.cpp
+    ../../src/engineSwapchain.cpp
+    ../../src/EngineDescriptors.cpp
+    ../../src/EngineCommands.cpp
+    ../../src/EngineImgui.cpp
+    ../../src/Images.cpp
+    ../../src/Mesh.cpp
+    ../../src/Model.cpp
+    ../../src/Utility.cpp
+    ../../src/Camera.cpp
+    ../../src/Rect.cpp
+    ../../src/Buffers.cpp
+    ../../src/Pipeline.cpp
+    ../../src/SSBO.cpp
     ../../src/AsyncLogger.cpp
-    ../../src/fontTexture.cpp
-    ../../src/texture.cpp
-    ../../src/fontHelper.cpp
+    ../../src/FontTexture.cpp
+    ../../src/Texture.cpp
+    ../../src/FontHelper.cpp
     # Imgui source files
     ../../lib/imgui/imgui.cpp
     ../../lib/imgui/imgui_demo.cpp
