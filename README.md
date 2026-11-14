@@ -59,6 +59,8 @@ The official tutorial is at docs/
 
 3. Run the demo and give me a star.
 
+For deeper explanations please see `docs/CompilingDemosLinux.md`
+
 ## Windows & macOS
 
 We are currently looking for contributors to help establish build instructions for macOS. If you have successfully compiled Hammer on this platform, please consider submitting a Pull Request or opening an issue with your steps!
