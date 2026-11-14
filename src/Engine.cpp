@@ -12,7 +12,9 @@
 
 void HammerEngine::initVulkan() {
     createInstance();
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
     setupDebugMessenger();
+#endif
     createSurface();
     pickPhysicalDevice();
     createLogicalDevice();
@@ -95,9 +97,9 @@ void HammerEngine::cleanup() {
 
     vkDestroyDevice(device, nullptr);
 
-    if (enableValidationLayers) {
-        DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
-    }
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
+    DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+#endif
 
     vkDestroySurfaceKHR(instance, surface, nullptr);
     vkDestroyInstance(instance, nullptr);

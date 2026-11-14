@@ -1,5 +1,5 @@
-#HammerRect
-This short doc will give you examples of how to do collisons with Hammer
+# HammerRect
+This short doc will give you examples of how to do collisions with Hammer
 
 ##Example 1: Checking 2D Rotated Rectangle Collision
 

@@ -17,9 +17,13 @@ Now we have an instance of the engine called “engine”.
 ### 2.1 Validation layers
 Validation layers are there to give you more detailed errors than the one Vulkan gives you. For development we will turn them on.
 
-`Engine.enableValidationLayers = true;`
+Validation layers are a compile-time feature. Enable them when configuring a demo with:
 
-You can always turn them off by just changing the true for false.
+`cmake -DENABLE_VULKAN_VALIDATION_LAYERS=ON ..`
+
+This defines `ENABLE_VULKAN_VALIDATION_LAYERS` for every source file of the demo, so the engine compiles its validation layer code in. When the macro is not defined, all validation layer code is compiled out of the engine.
+
+_NOT_ THIS IS A COMPILE TIME OPTION
 
 ### 2.2 Window
 In Hammer Engine you can change a few things of the window. These things include: window size (w and h) but also the title of the screen.
@@ -36,25 +40,25 @@ You can set the starting position of the camera.
 `Engine.cameraPosition = glm::vec3(0, 0, 2);`
 
 ### 2.4 The texture atlas path
-You can give Hammer Engine the path to a texture, but only 1 in the future Hammer Engine will have a way to have many textures but for now only 1.
+You can give Hammer Engine the path to a texture, but only 1. In the future Hammer Engine will have a way to have many textures but for now only 1.
 
 `Engine.texturePath = "textures/texture.png";`
 
 ### 2.5 The mouse
 If you are building an app that you need to have the control over the mouse cursor you can call change the cursor state.
-If mouse lock it set to 0 the mouse will be free to move, if it 1 the mouse can no longer move.
+If mouse lock is set to 0 the mouse will be free to move, if it is 1 the mouse can no longer move.
 
 `Engine.mouseLock = 0;`
 
 ### 2.6 Max textures
 Hammer needs to know how many textures in total there will be, I recommend putting 1.5 times as much as you will need. If you get any weird errors from the validation layers try increasing the number.
-For this example we will put 1000 to avoid future head aks.
+For this example we will put 1000 to avoid future headaches.
 
 `Engine.MaxTextures = 1000;`
 
 ### 2.7 Camera speed
 
-If you are using the build in cameras from Hammer the cameraSpeed variable will change the speed at which the camera move in all axis.
+If you are using the built-in cameras from Hammer the cameraSpeed variable will change the speed at which the camera moves in all axes.
 
 `Engine.cameraSpeed = 0.1f;`
 
@@ -66,7 +70,7 @@ Hammer has a variable that changes the render distance of the app.
 
 ### 2.9 Sensitivity
 
-When you use the build in cameras from Hammer you can change the sensitivity of the camera.
+When you use the built-in cameras from Hammer you can change the sensitivity of the camera.
 
 `Engine.renderDistance = 16.0f;`
 
@@ -79,25 +83,25 @@ Engine.initWindow();
 Engine.initVulkan();
 ```
 
-    Note: You must call these function afther configuring the Hammer instance.
+    Note: You must call these functions after configuring the Hammer instance.
 
 ### 4. Pipelines
 
-In graphics programming graphics pipelines need to be configured to use effects or for to put anything on the screen. HammerPipeline takes a few parameters: the Hammer instance, vertex shader path, fragment shader path, render triangle mod, render both sides of the triangle.
+In graphics programming graphics pipelines need to be configured to use effects or to put anything on the screen. HammerPipeline takes a few parameters: the Hammer instance, vertex shader path, fragment shader path, render triangle mod, render both sides of the triangle.
 
-The shaders MUST be precompiled using a SPIR-V compiler, the triangle mod is when you want to render the triangle normaly or only the wireframe (each 3 lines of a triangle), the render 2 side triangle mod determines if you want to see both sides of trianges most games only render 1 side.
+The shaders MUST be precompiled using a SPIR-V compiler, the triangle mod is when you want to render the triangle normally or only the wireframe (each 3 lines of a triangle), the render 2 side triangle mod determines if you want to see both sides of triangles. Most games only render 1 side.
 
 ```
 std::string vPath = "shaders/vert.spv";
 std::string fPath = "shaders/frag.spv";
-HammerPipline* mainPipeline = HammerPipeline(
+HammerPipeline* mainPipeline = HammerPipeline(
     Engine, vPath, fPath, 1, true
 );
 ```
 
 ### 4.1 Loading a Texture
 
-To renderer anything we need to add a texture to the mesh. The mesh will be created later.
+To render anything we need to add a texture to the mesh. The mesh will be created later.
 We use pointers to manage the memory of our texture. We also specify a filter (like Nearest for crisp pixel art).
 
 `HammerTexture* mainTexture = HammerTexture(Engine, "textures/texture.png", HammerTextureFilter::Nearest);`
@@ -106,7 +110,7 @@ We use pointers to manage the memory of our texture. We also specify a filter (l
 
 A Mesh is the actual object in your world. It requires three things: Vertices (points in space), Indices (the order to connect those points), and the Texture/Pipeline we created above.
 
-The following code creates a quade. A quade has 4 points so there will be 4 vertex. Indices are the instruction on how to connecte them. If you are rendering both side of the triangles (See the pipeline section) the order does not really matter. (reverse them will change what side is renderer if you are not using the render 2 side triangle mod)
+The following code creates a quad. A quad has 4 points so there will be 4 vertices. Indices are the instructions on how to connect them. If you are rendering both side of the triangles (See the pipeline section) the order does not really matter. (reversing them will change what side is rendered if you are not using the render 2 side triangle mod)
 ```
 std::vector<Vertex> vertices = {
     {{-0.5f, -0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
@@ -117,9 +121,9 @@ std::vector<Vertex> vertices = {
 std::vector<uint32_t> indices = { 0, 1, 2, 2, 3, 0 };
 ```
 
-### 5.5 Adding giving the mesh to Hammer
+### 5.5 Giving the mesh to Hammer
 
-uh no, there is a function to do this i.g some where
+uh no, there is a function to do this e.g somewhere
 
 `Engine.meshes.push_back(std::make_unique<HammerMesh>(Engine, mainPipeline.get(), mainTexture.get(), vertices, indices));`
 

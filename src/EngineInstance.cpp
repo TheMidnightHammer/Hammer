@@ -12,6 +12,7 @@ bool QueueFamilyIndices::isComplete() {
     return graphicsFamily.has_value() && presentFamily.has_value();
 }
 
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT) vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) {
@@ -27,11 +28,14 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
         func(instance, debugMessenger, pAllocator);
     }
 }
+#endif // ENABLE_VULKAN_VALIDATION_LAYERS
 
 void HammerEngine::createInstance() {
-    if (enableValidationLayers && !checkValidationLayerSupport()) {
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
+    if (!checkValidationLayerSupport()) {
         throw std::runtime_error("validation layers requested, but not available!");
     }
+#endif
 
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -49,24 +53,23 @@ void HammerEngine::createInstance() {
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
 
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
-    if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
 
-        populateDebugMessengerCreateInfo(debugCreateInfo);
-        createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
-    } else {
-        createInfo.enabledLayerCount = 0;
-
-        createInfo.pNext = nullptr;
-    }
+    populateDebugMessengerCreateInfo(debugCreateInfo);
+    createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*) &debugCreateInfo;
+#endif
+    // when validation layers are disabled, enabledLayerCount and pNext stay 0/null
+    // from the zero initialisation above.
 
     if (vkCreateInstance(&createInfo, nullptr, &instance) != VK_SUCCESS) {
         throw std::runtime_error("failed to create instance!");
     }
 }
 
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
 void HammerEngine::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -76,8 +79,6 @@ void HammerEngine::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateI
 }
 
 void HammerEngine::setupDebugMessenger() {
-    if (!enableValidationLayers) return;
-
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
 
@@ -85,6 +86,7 @@ void HammerEngine::setupDebugMessenger() {
         throw std::runtime_error("failed to set up debug messenger!");
     }
 }
+#endif // ENABLE_VULKAN_VALIDATION_LAYERS
 
 void HammerEngine::createSurface() {
     if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
@@ -168,12 +170,12 @@ void HammerEngine::createLogicalDevice() {
     createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
     createInfo.ppEnabledExtensionNames = deviceExtensions.data();
 
-    if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
-    } else {
-        createInfo.enabledLayerCount = 0;
-    }
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
+    createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+    createInfo.ppEnabledLayerNames = validationLayers.data();
+#endif
+    // when validation layers are disabled, enabledLayerCount stays 0 from the
+    // zero initialisation above.
 
     if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
         throw std::runtime_error("failed to create logical device!");
@@ -255,13 +257,14 @@ std::vector<const char*> HammerEngine::getRequiredExtensions() {
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
-    if (enableValidationLayers) {
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
+    extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+#endif
 
     return extensions;
 }
 
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
 bool HammerEngine::checkValidationLayerSupport() {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -292,3 +295,4 @@ VKAPI_ATTR VkBool32 VKAPI_CALL HammerEngine::debugCallback(VkDebugUtilsMessageSe
 
     return VK_FALSE;
 }
+#endif // ENABLE_VULKAN_VALIDATION_LAYERS

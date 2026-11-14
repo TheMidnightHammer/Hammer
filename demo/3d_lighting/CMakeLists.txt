@@ -6,6 +6,14 @@ cmake_minimum_required(VERSION 3.10)
 
 project(voxel_Engine VERSION 2.0)
 
+# Vulkan validation layers are compiled in only when enabled.
+# Enable with: cmake -DENABLE_VULKAN_VALIDATION_LAYERS=ON ..
+option(ENABLE_VULKAN_VALIDATION_LAYERS "Enable Vulkan validation layers" OFF)
+
+if(ENABLE_VULKAN_VALIDATION_LAYERS)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DENABLE_VULKAN_VALIDATION_LAYERS")
+endif()
+
 set(SOURCE_FILES
     test.cpp
     ../../src/Engine.cpp

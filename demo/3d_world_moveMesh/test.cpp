@@ -50,7 +50,7 @@ void generateCubeGrid(std::vector<Vertex>& outVertices, std::vector<uint32_t>& o
 }
 
 int main() {
-    HammerInfo info(true, 1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
+    HammerInfo info(1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
 
     HammerEngine* Engine = new HammerEngine(info);
     Engine->initWindow();

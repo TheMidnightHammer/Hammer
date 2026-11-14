@@ -26,15 +26,22 @@ inline uint32_t WindowHeight = 600;
 
 inline constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 
-inline const std::vector<const char*> validationLayers = {
-    "VK_LAYER_KHRONOS_validation"
-};
+/*
+ * Vulkan validation layers are compiled in only when ENABLE_VULKAN_VALIDATION_LAYERS
+ * is defined (the CMake option adds it to the C++ flags of every source file):
+ *   cmake -DENABLE_VULKAN_VALIDATION_LAYERS=ON ..
+ * When not defined, all validation layer code is compiled out.
+ */
 
 inline const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-inline bool enableValidationLayers = true; // default is enebled
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
+inline const std::vector<const char*> validationLayers = {
+    "VK_LAYER_KHRONOS_validation"
+};
+#endif
 
 VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);

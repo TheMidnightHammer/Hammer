@@ -57,10 +57,17 @@ public:
 // g_Logger.Log(frameData); 
 
 
+/*
+ * Vulkan validation layers are a compile-time feature. They are enabled by
+ * defining ENABLE_VULKAN_VALIDATION_LAYERS on the compiler command line,
+ * which the demo CMakeLists does for every source file of the target when
+ * built with:
+ *   cmake -DENABLE_VULKAN_VALIDATION_LAYERS=ON ..
+ * When the macro is not defined, all validation layer code is compiled out.
+ */
 class HammerInfo {
 public:
 
-    bool enableValidationLayers;
     int windowWidth;
     int windowHeight;
     std::string windowName;
@@ -70,16 +77,14 @@ public:
     float renderDistance;
     VkDeviceSize stagingBufferSize;
 
-    HammerInfo(bool EnableValidationLayers,
-                int WindowWidth,
+    HammerInfo(int WindowWidth,
                 int WindowHeight,
                 const std::string& WindowName,
                 int maxTextures,
                 bool MouseLock,
                 float CameraSpeed,
                 float RenderDistance,
-                VkDeviceSize StagingBufferSize) : enableValidationLayers(EnableValidationLayers),
-                                                windowHeight(WindowHeight), windowWidth(WindowWidth),
+                VkDeviceSize StagingBufferSize) : windowHeight(WindowHeight), windowWidth(WindowWidth),
                                                 windowName(WindowName), MaxTextures(maxTextures),
                                                 mouseLock(MouseLock), cameraSpeed(CameraSpeed),
                                                 renderDistance(RenderDistance), stagingBufferSize(StagingBufferSize) {}
@@ -437,7 +442,6 @@ class HammerEngine {
 public:
 
     HammerEngine(HammerInfo info) {
-        this->enableValidationLayers = info.enableValidationLayers;
         this->windowWidth = info.windowWidth;
         this->windowHeight = info.windowHeight;
         this->windowName = info.windowName;
@@ -450,8 +454,6 @@ public:
 
     uint32_t windowWidth;
     uint32_t windowHeight;
-
-    bool enableValidationLayers;
 
     float yaw = -90.0f; // Horizontal angle
     float pitch = 0.0f; // Vertical angle
@@ -610,7 +612,9 @@ private:
 	bool firstMouse = true;
 
 	VkInstance instance;
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
 	VkDebugUtilsMessengerEXT debugMessenger;
+#endif
 	VkSurfaceKHR surface;
 
 	VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
@@ -675,9 +679,11 @@ private:
 
     void createInstance();
 
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
 
     void setupDebugMessenger();
+#endif
 
     void createSurface();
 
@@ -745,9 +751,11 @@ private:
 
     std::vector<const char*> getRequiredExtensions();
 
+#ifdef ENABLE_VULKAN_VALIDATION_LAYERS
     bool checkValidationLayerSupport();
 
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
+#endif
 
 };
 
