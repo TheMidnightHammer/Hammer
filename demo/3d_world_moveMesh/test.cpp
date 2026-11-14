@@ -71,8 +71,6 @@ int main() {
     HammerMesh* myMesh = new HammerMesh(Engine, mainPipeline, boxTexture, vertices, indices);
     Engine->meshes.push_back(myMesh);
 
-    myMesh->updateBuffers(vertices, indices);
-
     Engine->drawPassStart();
     while (!glfwWindowShouldClose(Engine->window)) {
         Engine->updateFrameTimeStart();

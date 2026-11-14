@@ -369,7 +369,7 @@ public:
     HammerPipeline* getPipeline() const { return pipeline; }
     HammerTexture* getTexture() const { return texture; }
     
-    void updateBuffers(std::vector<Vertex> &newVertexData, std::vector<uint32_t> &newIndexData);
+    void syncVertexIndexBuffers();
 
     uint32_t getIndexCount();
 
@@ -385,6 +385,9 @@ private:
 
     HammerPipeline* pipeline;
     HammerTexture* texture;
+
+    VkDeviceSize oldIndexData; // should be updated on *ANY* buffer operation
+    VkDeviceSize oldVertexData;
 
     VkBuffer vertexBuffer = VK_NULL_HANDLE;
     VkDeviceMemory vertexBufferMemory = VK_NULL_HANDLE;
