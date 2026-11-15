@@ -84,8 +84,8 @@ void HammerMesh::syncVertexIndexBuffers() {
     VkDeviceSize newVertexSize = this->vertexData.size(); //sizeof(Vertex) * newVertexData.size();
     VkDeviceSize newIndexSize = this->indexData.size(); //sizeof(uint32_t) * newIndexData.size();
 
-    VkDeviceSize oldVertexSize = oldIndexData;
-    VkDeviceSize oldIndexSize = oldIndexData;
+    VkDeviceSize oldVertexSize = oldIndexDataSize;
+    VkDeviceSize oldIndexSize = oldIndexDataSize;
 
     if(newVertexSize >= oldVertexSize || newIndexSize >= oldIndexSize) {
         std::cerr << "WARNING: Hammer must recreate recreate buffers to fit buffer data update, this may cause performance spikes !!!\n";
@@ -142,8 +142,8 @@ void HammerMesh::syncVertexIndexBuffers() {
     engine->endSingleTimeCommands(commandBuffer);
 
     // updated vertex/index size count
-    oldIndexData = this->indexData.size();
-    oldVertexData = this->vertexData.size();
+    oldIndexDataSize = this->indexData.size();
+    oldVertexDataSize = this->vertexData.size();
 }
 
 HammerMesh::HammerMesh(Hammer* engine, HammerPipeline* pipeline, HammerTexture* texture, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
@@ -165,8 +165,8 @@ HammerMesh::HammerMesh(Hammer* engine, HammerPipeline* pipeline, HammerTexture* 
     createIndexBuffer(indices);
 
     // updated vertex/index size count
-    oldIndexData = this->indexData.size();
-    oldVertexData = this->vertexData.size();
+    oldIndexDataSize = this->indexData.size();
+    oldVertexDataSize = this->vertexData.size();
 }
 
 HammerMesh::~HammerMesh() {
@@ -244,8 +244,8 @@ void HammerMesh::createVertexBuffer(const std::vector<Vertex>& vertices) {
     vkFreeMemory(engine->getDevice(), stagingBufferMemory, nullptr);
 
     // updated vertex/index size count, do both because :D
-    oldIndexData = this->indexData.size();
-    oldVertexData = this->vertexData.size();
+    oldIndexDataSize = this->indexData.size();
+    oldVertexDataSize = this->vertexData.size();
 }
 
 void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
@@ -308,8 +308,8 @@ void HammerMesh::createIndexBuffer(const std::vector<uint32_t>& indices) {
     vkFreeMemory(engine->getDevice(), stagingBufferMemory, nullptr);
 
     // updated vertex/index size count, do both because :D
-    oldIndexData = this->indexData.size();
-    oldVertexData = this->vertexData.size();
+    oldIndexDataSize = this->indexData.size();
+    oldVertexDataSize = this->vertexData.size();
 }
 
 VkVertexInputBindingDescription Vertex::getBindingDescription() {

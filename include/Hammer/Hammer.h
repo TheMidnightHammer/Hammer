@@ -380,8 +380,8 @@ private:
     HammerPipeline* pipeline;
     HammerTexture* texture;
 
-    VkDeviceSize oldIndexData; // should be updated on *ANY* buffer operation
-    VkDeviceSize oldVertexData;
+    VkDeviceSize oldIndexDataSize; // should be updated on *ANY* buffer operation
+    VkDeviceSize oldVertexDataSize;
 
     VkBuffer vertexBuffer = VK_NULL_HANDLE;
     VkDeviceMemory vertexBufferMemory = VK_NULL_HANDLE;
