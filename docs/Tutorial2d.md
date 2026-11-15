@@ -3,13 +3,13 @@ This tutorial assumes that you have a medium understanding of C++.
 
 Now let's get started.
 
-## 1. Creating a Hammer Engine instance.
+## 1. Creating a Hammer instance.
 
 The foundation of any Hammer project involves configuring the engine settings, initializing Vulkan, and setting up a basic camera.
 
 First we need to an instance of Hammer:
 
-`HammerEngine engine;`
+`Hammer engine;`
 
 Now we have an instance of the engine called “engine”.
 
@@ -26,12 +26,12 @@ This defines `ENABLE_VULKAN_VALIDATION_LAYERS` for every source file of the demo
 _NOT_ THIS IS A COMPILE TIME OPTION
 
 ### 2.2 Window
-In Hammer Engine you can change a few things of the window. These things include: window size (w and h) but also the title of the screen.
+In Hammer you can change a few things of the window. These things include: window size (w and h) but also the title of the screen.
 
 ```
-Engine.WindowWidth = 1000;
-Engine.WindowHeight = 1000;
-Engine.windowName = "Hammer Engine";
+Engine.windowWidth = 1000;
+Engine.windowHeight = 1000;
+Engine.windowName = "Hammer";
 ```
 
 ### 2.3 Camera position
@@ -40,9 +40,7 @@ You can set the starting position of the camera.
 `Engine.cameraPosition = glm::vec3(0, 0, 2);`
 
 ### 2.4 The texture atlas path
-You can give Hammer Engine the path to a texture, but only 1. In the future Hammer Engine will have a way to have many textures but for now only 1.
-
-`Engine.texturePath = "textures/texture.png";`
+The path to a texture is given when you create the texture itself (see section 4.1), but only 1 for now. In the future Hammer will have a way to have many textures but for now only 1.
 
 ### 2.5 The mouse
 If you are building an app that you need to have the control over the mouse cursor you can call change the cursor state.
@@ -54,7 +52,7 @@ If mouse lock is set to 0 the mouse will be free to move, if it is 1 the mouse c
 Hammer needs to know how many textures in total there will be, I recommend putting 1.5 times as much as you will need. If you get any weird errors from the validation layers try increasing the number.
 For this example we will put 1000 to avoid future headaches.
 
-`Engine.MaxTextures = 1000;`
+`Engine.maxTextures = 1000;`
 
 ### 2.7 Camera speed
 
@@ -72,7 +70,7 @@ Hammer has a variable that changes the render distance of the app.
 
 When you use the built-in cameras from Hammer you can change the sensitivity of the camera.
 
-`Engine.renderDistance = 16.0f;`
+`Engine.sensitivity = 0.05f;`
 
 ### 3. Initialization
 
@@ -161,4 +159,4 @@ mainPipeline.reset();
 
 Congratulations!
 
-You've just built a functional 2D rendering loop in HammerEngine. Your engine is now initialized, your textures are loaded, and your mesh is ready for action.
+You've just built a functional 2D rendering loop in Hammer. Your engine is now initialized, your textures are loaded, and your mesh is ready for action.

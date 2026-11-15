@@ -11,7 +11,7 @@
 #include "../lib/imgui/imgui.h"
 #include "../lib/imgui/imgui_impl_vulkan.h"
 
-void HammerEngine::createCommandPool() {
+void Hammer::createCommandPool() {
     QueueFamilyIndices queueFamilyIndices = findQueueFamilies(physicalDevice);
 
     VkCommandPoolCreateInfo poolInfo{};
@@ -24,7 +24,7 @@ void HammerEngine::createCommandPool() {
     }
 }
 
-void HammerEngine::createCommandBuffers() {
+void Hammer::createCommandBuffers() {
     commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 
     VkCommandBufferAllocateInfo allocInfo{};
@@ -38,7 +38,7 @@ void HammerEngine::createCommandBuffers() {
     }
 }
 
-void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
+void Hammer::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -106,7 +106,7 @@ void HammerEngine::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
     }
 }
 
-void HammerEngine::createSyncObjects() {
+void Hammer::createSyncObjects() {
     imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -133,7 +133,7 @@ void HammerEngine::createSyncObjects() {
     }
 }
 
-void HammerEngine::updateUniformBuffer(uint32_t currentImage) {
+void Hammer::updateUniformBuffer(uint32_t currentImage) {
     static auto startTime = std::chrono::high_resolution_clock::now();
 
     auto currentTime = std::chrono::high_resolution_clock::now();
@@ -150,7 +150,7 @@ void HammerEngine::updateUniformBuffer(uint32_t currentImage) {
     memcpy(uniformBuffersMapped[currentImage], &ubo, sizeof(ubo));
 }
 
-void HammerEngine::drawFrame() {
+void Hammer::drawFrame() {
     vkWaitForFences(device, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     uint32_t imageIndex;
@@ -222,7 +222,7 @@ void HammerEngine::drawFrame() {
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
 
-VkCommandBuffer HammerEngine::beginSingleTimeCommands() {
+VkCommandBuffer Hammer::beginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
@@ -241,7 +241,7 @@ VkCommandBuffer HammerEngine::beginSingleTimeCommands() {
     return commandBuffer;
 }
 
-void HammerEngine::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
+void Hammer::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkEndCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo{};

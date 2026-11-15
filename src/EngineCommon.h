@@ -1,8 +1,8 @@
-#ifndef HAMMER_ENGINE_COMMON_H
-#define HAMMER_ENGINE_COMMON_H
+#ifndef HAMMER_COMMON_H
+#define HAMMER_COMMON_H
 
 #define GLFW_INCLUDE_VULKAN
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 
 #include <glm/ext/vector_float2.hpp>
 #include <glm/ext/vector_float3.hpp>
@@ -21,8 +21,8 @@
 #include <array>
 #include <set>
 
-inline uint32_t WindowWidth = 800;
-inline uint32_t WindowHeight = 600;
+inline uint32_t windowWidth = 800;
+inline uint32_t windowHeight = 600;
 
 inline constexpr int MAX_FRAMES_IN_FLIGHT = 2;
 

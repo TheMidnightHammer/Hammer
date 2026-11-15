@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../../include/HammerEngine/HammerEngine.h"
+#include "../../include/Hammer/Hammer.h"
 #include "../../lib/imgui/imgui.h"
 #include "../../lib/imgui/imgui_impl_glfw.h"
 #include "../../lib/imgui/imgui_impl_vulkan.h"
@@ -19,14 +19,14 @@ int main() {
         .windowWidth = 1000,
         .windowHeight = 1000,
         .windowName = "Hammer",
-        .MaxTextures = 1000, // what ever you want really
+        .maxTextures = 1000, // what ever you want really
         .mouseLock = false,
         .cameraSpeed = 1.0f,
         .renderDistance = 16.0f,
         .stagingBufferSize = 1024*1024*16,
     };
 
-    HammerEngine* Engine = new HammerEngine(info);
+    Hammer* Engine = new Hammer(info);
     Engine->initWindow();
     Engine->initVulkan();
     Engine->InitImgui();

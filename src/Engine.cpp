@@ -10,7 +10,7 @@
 #include "../lib/imgui/imgui_impl_glfw.h"
 #include "../lib/imgui/imgui_impl_vulkan.h"
 
-void HammerEngine::initVulkan() {
+void Hammer::initVulkan() {
     createInstance();
 #ifdef ENABLE_VULKAN_VALIDATION_LAYERS
     setupDebugMessenger();
@@ -33,7 +33,7 @@ void HammerEngine::initVulkan() {
     createSyncObjects();
 }
 
-void HammerEngine::cleanup() {
+void Hammer::cleanup() {
 
     vkDeviceWaitIdle(device);
 
@@ -82,7 +82,7 @@ void HammerEngine::cleanup() {
 
     vkDestroyDescriptorSetLayout(device, globalSetLayout, nullptr);
     vkDestroyDescriptorSetLayout(device, textureSetLayout, nullptr);
-    vkDestroyDescriptorSetLayout(device, ssboSetLayout, nullptr);
+    vkDestroyDescriptorSetLayout(device, SSBOSetLayout, nullptr);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(device, imageAvailableSemaphores[i], nullptr);
@@ -109,11 +109,11 @@ void HammerEngine::cleanup() {
     glfwTerminate();
 }
 
-void HammerEngine::addMeshRenderer(HammerMesh* mesh) {
+void Hammer::addMeshRenderer(HammerMesh* mesh) {
     meshes.push_back(mesh);
 }
 
-void HammerEngine::removeMeshRenderer(int index){
+void Hammer::removeMeshRenderer(int index){
     if (index < 0 || static_cast<size_t>(index) >= meshes.size()) {
         std::cerr << "Warning, trying to remove mesh from renderer with index out of range !!!\n";
         return;

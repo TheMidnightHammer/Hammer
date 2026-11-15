@@ -3,7 +3,7 @@
  * This source code is licensed under the MIT license
  * LICENSE file in the root directory of this source tree.
  */
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 #define STB_TRUETYPE_IMPLEMENTATION
 #include "../lib/stb_truetype.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -13,7 +13,7 @@
 // thanks to https://github.com/ZDev22/ZEngine/blob/main/src/ztext.h for the base implementation
 // and he use this https://github.com/justinmeiners/stb-truetype-example/blob/master/main.c as base implementation 
 
-HammerFont::HammerFont(HammerEngine* eng, const char* fontPath) : engine(eng) {
+HammerFont::HammerFont(Hammer* eng, const char* fontPath) : engine(eng) {
     FILE* fontFile = fopen(fontPath, "rb");
     fseek(fontFile, 0, SEEK_END);
     unsigned int size = ftell(fontFile);
@@ -37,7 +37,7 @@ HammerFont::HammerFont(HammerEngine* eng, const char* fontPath) : engine(eng) {
     fontSize++;
 }
 
-HammerCustomTexture* HammerFont::createTextPtr(HammerEngine* engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter) {
+HammerCustomTexture* HammerFont::createTextPtr(Hammer* engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter) {
     unsigned char* bitmap = (unsigned char*)calloc(1, b_w * b_h);
 
     float scale = stbtt_ScaleForPixelHeight(&fonts[index], l_h);
@@ -78,7 +78,7 @@ HammerCustomTexture* HammerFont::createTextPtr(HammerEngine* engine, const char*
     return output;
 }
 
-HammerCustomTexture* HammerFont::createFontAtlasPtr(HammerEngine* engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter) {
+HammerCustomTexture* HammerFont::createFontAtlasPtr(Hammer* engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter) {
     const char* word = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     unsigned int numChars = strlen(word);
 

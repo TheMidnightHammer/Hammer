@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerRect.h"
+#include "../include/Hammer/HammerRect.h"
 #include <cmath>
 #include <algorithm>
 #include <limits>

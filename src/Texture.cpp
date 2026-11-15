@@ -5,14 +5,14 @@
  */
 
 
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 #include "../lib/stb_truetype.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../lib/stb_image.h"
 
 
-HammerCustomTexture::HammerCustomTexture(HammerEngine* eng, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter) 
+HammerCustomTexture::HammerCustomTexture(Hammer* eng, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter) 
     : engine(eng) {
     
     createTextureImage(bitmapData, width, height);
@@ -130,7 +130,7 @@ void HammerCustomTexture::createTextureSampler(HammerTextureFilter filter) {
     }
 }
 
-HammerMesh* HammerEngine::CreateTextQuad(HammerPipeline* pipeline, HammerTexture* textTexture, float x, float y, float width, float height) {
+HammerMesh* Hammer::CreateTextQuad(HammerPipeline* pipeline, HammerTexture* textTexture, float x, float y, float width, float height) {
     std::vector<Vertex> vertices = {
         {{x,         y,          0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
         {{x + width, y,          0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
@@ -145,7 +145,7 @@ HammerMesh* HammerEngine::CreateTextQuad(HammerPipeline* pipeline, HammerTexture
     return new HammerMesh(this, pipeline, textTexture, vertices, indices);
 }
 
-HammerMesh* HammerEngine::CreateTextQuad(HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height) {
+HammerMesh* Hammer::CreateTextQuad(HammerPipeline* pipeline, HammerCustomTexture* textTexture, float x, float y, float width, float height) {
     std::vector<Vertex> vertices = {
         {{x,         y,          0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
         {{x + width, y,          0.0f}, {1.0f, 1.0f, 1.0f}, {1.0f, 1.0f}, {0.0f, 0.0f, 1.0f}},
@@ -274,7 +274,7 @@ void HammerTexture::createTextureSampler(HammerTextureFilter filter) {
     }
 }
 
-HammerTexture::HammerTexture(HammerEngine* eng, const std::string& path, HammerTextureFilter filter) 
+HammerTexture::HammerTexture(Hammer* eng, const std::string& path, HammerTextureFilter filter) 
     : engine(eng) {
     
     createTextureImage(path);

@@ -4,18 +4,18 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerEngine.h" 
+#include "../include/Hammer/Hammer.h" 
 #include <glm/ext/matrix_float4x4.hpp>
 #include <stdexcept>
 
 HammerPipeline::HammerPipeline(
-    HammerEngine* engine, 
+    Hammer* engine, 
     const std::string& vertPath, 
     const std::string& fragPath,
     int renderTriangleMod,
     bool triangleRender2SideMode,
     HammerSSBO* targetSSBO
-    ) : hammerEngine(engine), ssbo(targetSSBO) {
+    ) : hammerEngine(engine), SSBO(targetSSBO) {
     
     createGraphicsPipeline(vertPath, fragPath, renderTriangleMod, triangleRender2SideMode);
 }
@@ -128,7 +128,7 @@ void HammerPipeline::createGraphicsPipeline(
         hammerEngine->getTextureSetLayout()
     };
 
-    if (this->ssbo != nullptr) {
+    if (this->SSBO != nullptr) {
         setLayouts.push_back(hammerEngine->getSsboSetLayout());
     }
 

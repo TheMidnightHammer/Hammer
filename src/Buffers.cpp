@@ -4,20 +4,20 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 #include <vulkan/vulkan_core.h>
 #include <fstream>
 #include <cstring>
 #include <cstdlib>
 #include <cstdint>
 
-void HammerEngine::setMaxBufferSize(VkDeviceSize size) {
+void Hammer::setMaxBufferSize(VkDeviceSize size) {
     stagingBufferSize = size;
     stagingBuffer2Size = size;
 }
 
 
-void HammerEngine::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+void Hammer::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     VkBufferImageCopy region{};
@@ -40,7 +40,7 @@ void HammerEngine::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t wi
     endSingleTimeCommands(commandBuffer);
 }
 
-void HammerEngine::createStagingBuffer(){
+void Hammer::createStagingBuffer(){
 
     createBuffer(
         stagingBufferSize,
@@ -59,7 +59,7 @@ void HammerEngine::createStagingBuffer(){
     );
 }
 
-void HammerEngine::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
+void Hammer::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkMemoryPropertyFlags properties, VkBuffer& buffer, VkDeviceMemory& bufferMemory) {
     VkBufferCreateInfo bufferInfo{};
     bufferInfo.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
     bufferInfo.size = size;
@@ -85,7 +85,7 @@ void HammerEngine::createBuffer(VkDeviceSize size, VkBufferUsageFlags usage, VkM
     vkBindBufferMemory(device, buffer, bufferMemory, 0);
 }
 
-void HammerEngine::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
+void Hammer::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSize size) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     VkBufferCopy copyRegion{};
@@ -95,7 +95,7 @@ void HammerEngine::copyBuffer(VkBuffer srcBuffer, VkBuffer dstBuffer, VkDeviceSi
     endSingleTimeCommands(commandBuffer);
 }
 
-uint32_t HammerEngine::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+uint32_t Hammer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(physicalDevice, &memProperties);
 
@@ -108,7 +108,7 @@ uint32_t HammerEngine::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags
     throw std::runtime_error("failed to find suitable memory type!");
 }
 
-VkShaderModule HammerEngine::createShaderModule(const std::vector<char>& code) {
+VkShaderModule Hammer::createShaderModule(const std::vector<char>& code) {
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
     createInfo.codeSize = code.size();
@@ -122,7 +122,7 @@ VkShaderModule HammerEngine::createShaderModule(const std::vector<char>& code) {
     return shaderModule;
 }
 
-std::vector<char> HammerEngine::readFile(const std::string& filename) {
+std::vector<char> Hammer::readFile(const std::string& filename) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {

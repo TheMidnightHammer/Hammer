@@ -8,7 +8,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-void HammerEngine::createSwapChain() {
+void Hammer::createSwapChain() {
     SwapChainSupportDetails swapChainSupport = querySwapChainSupport(physicalDevice);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -65,7 +65,7 @@ void HammerEngine::createSwapChain() {
     imagesInFlight.resize(imageCount, VK_NULL_HANDLE);
 }
 
-void HammerEngine::cleanupSwapChain() {
+void Hammer::cleanupSwapChain() {
     vkDestroyImageView(device, depthImageView, nullptr);
     vkDestroyImage(device, depthImage, nullptr);
     vkFreeMemory(device, depthImageMemory, nullptr);
@@ -81,7 +81,7 @@ void HammerEngine::cleanupSwapChain() {
     vkDestroySwapchainKHR(device, swapChain, nullptr);
 }
 
-void HammerEngine::recreateSwapChain() {
+void Hammer::recreateSwapChain() {
     int width = 0, height = 0;
     glfwGetFramebufferSize(window, &width, &height);
     while (width == 0 || height == 0) {
@@ -99,7 +99,7 @@ void HammerEngine::recreateSwapChain() {
     createFramebuffers();
 }
 
-void HammerEngine::createImageViews() {
+void Hammer::createImageViews() {
     swapChainImageViews.resize(swapChainImages.size());
 
     for (uint32_t i = 0; i < swapChainImages.size(); i++) {
@@ -107,7 +107,7 @@ void HammerEngine::createImageViews() {
     }
 }
 
-void HammerEngine::createRenderPass() {
+void Hammer::createRenderPass() {
     VkAttachmentDescription colorAttachment{};
     colorAttachment.format = swapChainImageFormat;
     colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -165,7 +165,7 @@ void HammerEngine::createRenderPass() {
     }
 }
 
-void HammerEngine::createFramebuffers() {
+void Hammer::createFramebuffers() {
     swapChainFramebuffers.resize(swapChainImageViews.size());
 
     for (size_t i = 0; i < swapChainImageViews.size(); i++) {
@@ -189,14 +189,14 @@ void HammerEngine::createFramebuffers() {
     }
 }
 
-void HammerEngine::createDepthResources() {
+void Hammer::createDepthResources() {
     VkFormat depthFormat = findDepthFormat();
 
     createImage(swapChainExtent.width, swapChainExtent.height, 1, depthFormat, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, depthImage, depthImageMemory);
     depthImageView = createImageView(depthImage, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 }
 
-VkSurfaceFormatKHR HammerEngine::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
+VkSurfaceFormatKHR Hammer::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
     for (const auto& availableFormat : availableFormats) {
         if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
             return availableFormat;
@@ -206,7 +206,7 @@ VkSurfaceFormatKHR HammerEngine::chooseSwapSurfaceFormat(const std::vector<VkSur
     return availableFormats[0];
 }
 
-VkPresentModeKHR HammerEngine::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
+VkPresentModeKHR Hammer::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
     for (const auto& availablePresentMode : availablePresentModes) {
         if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
             return availablePresentMode;
@@ -219,7 +219,7 @@ VkPresentModeKHR HammerEngine::chooseSwapPresentMode(const std::vector<VkPresent
     return availablePresentModes[0];
 }
 
-VkExtent2D HammerEngine::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
+VkExtent2D Hammer::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
     if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
         return capabilities.currentExtent;
     } else {
@@ -238,7 +238,7 @@ VkExtent2D HammerEngine::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabi
     }
 }
 
-SwapChainSupportDetails HammerEngine::querySwapChainSupport(VkPhysicalDevice device) {
+SwapChainSupportDetails Hammer::querySwapChainSupport(VkPhysicalDevice device) {
     SwapChainSupportDetails details;
 
     vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);

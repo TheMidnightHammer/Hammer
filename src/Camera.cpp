@@ -4,9 +4,9 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 
-void HammerEngine::mouseCallback(double xpos, double ypos) {
+void Hammer::mouseCallback(double xpos, double ypos) {
 
     if (firstMouse) {
         lastX = xpos;
@@ -35,7 +35,7 @@ void HammerEngine::mouseCallback(double xpos, double ypos) {
     cameraFront = glm::normalize(front);
 }
 
-void HammerEngine::updateCameraDefault3D(){
+void Hammer::updateCameraDefault3D(){
     glfwPollEvents();
 
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -56,14 +56,14 @@ void HammerEngine::updateCameraDefault3D(){
     }
 
     if (glfwGetKey(window,  GLFW_KEY_ESCAPE) == GLFW_PRESS){
-        mouse_capture = false;
+        mouseCapture = false;
     }
 
     if (glfwGetKey(window,  GLFW_KEY_P) == GLFW_PRESS){
-        mouse_capture = true;
+        mouseCapture = true;
     }
 
-    if (mouse_capture) {
+    if (mouseCapture) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         mouseCallback(mouseX, mouseY);
     } else {
@@ -71,7 +71,7 @@ void HammerEngine::updateCameraDefault3D(){
     }
 }
 
-void HammerEngine::updateCameraDefaultGravety3D(bool fall){
+void Hammer::updateCameraDefaultGravety3D(bool fall){
     glfwPollEvents();
 
     glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -117,14 +117,14 @@ void HammerEngine::updateCameraDefaultGravety3D(bool fall){
 
 
     if (glfwGetKey(window,  GLFW_KEY_ESCAPE) == GLFW_PRESS){
-        mouse_capture = false;
+        mouseCapture = false;
     }
 
     if (glfwGetKey(window,  GLFW_KEY_P) == GLFW_PRESS){
-        mouse_capture = true;
+        mouseCapture = true;
     }
 
-    if (mouse_capture) {
+    if (mouseCapture) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
         mouseCallback(mouseX, mouseY);
     } else {
@@ -136,11 +136,11 @@ void HammerEngine::updateCameraDefaultGravety3D(bool fall){
     }
 }
 
-void HammerEngine::updateCameraDefault2D(){
+void Hammer::updateCameraDefault2D(){
     glfwPollEvents();
 
     float velocity = cameraSpeed;
-    mouse_capture = false;
+    mouseCapture = false;
 
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
         cameraPosition.x += velocity;

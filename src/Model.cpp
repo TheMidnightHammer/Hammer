@@ -25,7 +25,7 @@ HammerModel::HammerModel(const std::string& path){
     );
 
     if (!ret) {
-        throw std::runtime_error("HammerEngine: Failed to load OBJ: " + warn_and_err);
+        throw std::runtime_error("Hammer: Failed to load OBJ: " + warn_and_err);
     }
 
     std::unordered_map<Vertex, uint32_t> uniqueVertices{};

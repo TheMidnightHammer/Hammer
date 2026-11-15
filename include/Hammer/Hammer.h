@@ -4,8 +4,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#ifndef HAMMERENGINE_H
-#define HAMMERENGINE_H
+#ifndef HAMMER_H
+#define HAMMER_H
 
 #include <chrono>
 #include <glm/ext/vector_float3.hpp>
@@ -72,7 +72,7 @@ public:
     int windowWidth = 400; // small for small screens
     int windowHeight = 340;
     std::string windowName = "Hammer";
-    int MaxTextures = 2048; // good for simple games
+    int maxTextures = 2048; // good for simple games
     bool mouseLock = false;
     float cameraSpeed = 1.0f;
     float renderDistance = 512.0f;
@@ -105,7 +105,7 @@ struct Vertex {
 
 // forward declaration of classes
 
-class HammerEngine;
+class Hammer;
 class HammerPipeline;
 class HammerSSBO;
 class HammerFont;
@@ -135,7 +135,7 @@ enum class HammerTextureFilter {
 
 class HammerCustomTexture {
 public:
-    HammerCustomTexture(HammerEngine* Engine, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter);
+    HammerCustomTexture(Hammer* Engine, unsigned char* bitmapData, uint32_t width, uint32_t height, HammerTextureFilter filter);
     ~HammerCustomTexture();
 
     HammerCustomTexture(const HammerCustomTexture&) = delete;
@@ -149,7 +149,7 @@ private:
     VkImageView imageView = VK_NULL_HANDLE;
     VkSampler sampler = VK_NULL_HANDLE;
 
-    HammerEngine* engine;
+    Hammer* engine;
 
     void createTextureImage(unsigned char* pixels, uint32_t texWidth, uint32_t texHeight);
     void createTextureSampler(HammerTextureFilter filter);
@@ -167,9 +167,9 @@ constexpr int kPrintableAsciiCount = 95;
 
 class HammerFont {
 public:
-    HammerFont(HammerEngine* engine,const char* fontPath);
-    HammerCustomTexture* createTextPtr(HammerEngine* engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
-    HammerCustomTexture* createFontAtlasPtr(HammerEngine* engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
+    HammerFont(Hammer* engine,const char* fontPath);
+    HammerCustomTexture* createTextPtr(Hammer* engine, const char* word, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
+    HammerCustomTexture* createFontAtlasPtr(Hammer* engine, unsigned char index, const unsigned int l_h, const unsigned int b_w, const unsigned int b_h, HammerTextureFilter filter);
 
     Char charCoor(int index, int totalChars, float xOffset, float yOffset, float charWidth, float charHeight, const char name);
 
@@ -286,7 +286,7 @@ private:
     stbtt_fontinfo* fonts = NULL;
     unsigned short fontSize = 0;
 
-    HammerEngine* engine;
+    Hammer* engine;
 };
 
 // Custom hash for Vertex
@@ -311,7 +311,7 @@ public:
 
 class HammerTexture {
 public:
-    HammerTexture(HammerEngine* engine, const std::string& path, HammerTextureFilter filter);
+    HammerTexture(Hammer* engine, const std::string& path, HammerTextureFilter filter);
     ~HammerTexture();
 
     HammerTexture(const HammerTexture&) = delete;
@@ -328,7 +328,7 @@ private:
     uint32_t mipLevels;
     VkImage textureImage;
 
-    HammerEngine* engine;
+    Hammer* engine;
 
     void createTextureImage(const std::string& path);
     void createTextureSampler(HammerTextureFilter filter);
@@ -337,7 +337,7 @@ private:
 
 class HammerMesh {
 public:
-    HammerMesh(HammerEngine* engine, 
+    HammerMesh(Hammer* engine, 
                 HammerPipeline* pipeline, 
                 HammerTexture* texture, 
                 const std::vector<Vertex>& vertices, 
@@ -375,7 +375,7 @@ private:
     VkBuffer stagingBuffer = VK_NULL_HANDLE;
     VkDeviceMemory stagingBufferMemory = VK_NULL_HANDLE;
 
-    HammerEngine* engine;
+    Hammer* engine;
 
     HammerPipeline* pipeline;
     HammerTexture* texture;
@@ -394,7 +394,7 @@ private:
 class HammerPipeline {
 public:
     HammerPipeline(
-        HammerEngine* engine, 
+        Hammer* engine, 
         const std::string& vertPath, 
         const std::string& fragPath,
         int renderTriangleMod,
@@ -403,8 +403,8 @@ public:
     );
 
         // TODO:
-    // HammerMesh(HammerSSBO* targetSSBO) : ssbo(targetSSBO) {
-    //     // i can now access ssbo->getBuffer() when setting up your 
+    // HammerMesh(HammerSSBO* targetSSBO) : SSBO(targetSSBO) {
+    //     // i can now access SSBO->getBuffer() when setting up your 
     //     // vkUpdateDescriptorSets or binding resources.
     // }
 
@@ -420,21 +420,21 @@ public:
         int renderTriangleMod,
         bool triangleRender2SideMode);
 
-    HammerEngine* hammerEngine;
+    Hammer* hammerEngine;
     VkPipeline graphicsPipeline;
     VkPipelineLayout pipelineLayout;    
-    HammerSSBO* ssbo = nullptr;
+    HammerSSBO* SSBO = nullptr;
 };
 
 
-class HammerEngine {
+class Hammer {
 public:
 
-    HammerEngine(HammerInfo info) {
+    Hammer(HammerInfo info) {
         this->windowWidth = info.windowWidth;
         this->windowHeight = info.windowHeight;
         this->windowName = info.windowName;
-        this->MaxTextures = info.MaxTextures;
+        this->maxTextures = info.maxTextures;
         this->mouseLock = info.mouseLock;
         this->cameraSpeed = info.cameraSpeed;
         this->renderDistance = info.renderDistance;
@@ -448,7 +448,7 @@ public:
     float pitch = 0.0f; // Vertical angle
     float cameraSpeed = 0.01f; // Speed of movement
     float sensitivity = 0.05f; 
-    bool mouse_capture = true;
+    bool mouseCapture = true;
 
     glm::vec3 cameraPosition = glm::vec3(0.0f, 0.0f, 3.0f); // Initial position
     glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);   // Forward direction
@@ -461,7 +461,7 @@ public:
     GLFWmonitor* targetMonitor = nullptr;
 
     // system info
-    std::string windowName = "Hammer Engine";
+    std::string windowName = "Hammer";
     std::string GPUName = "NONE SELECTED";
     std::string driverName = "NONE SELECTED";
     std::string driverInfo = "NONE SELECTED";
@@ -568,7 +568,7 @@ public:
     }
 
     VkDescriptorSetLayout getSsboSetLayout() {
-        return ssboSetLayout;
+        return SSBOSetLayout;
     }
 
     // used for updating buffers super fast and avoiding buffer creating overhead
@@ -585,7 +585,7 @@ private:
 
     bool useImGui = false;
 
-    int MaxTextures = 1000;
+    int maxTextures = 1000;
 
     double currentTime = glfwGetTime();
     std::chrono::time_point<std::chrono::high_resolution_clock> start;
@@ -618,7 +618,7 @@ private:
 	VkRenderPass renderPass;
 	VkDescriptorSetLayout globalSetLayout; 
     VkDescriptorSetLayout textureSetLayout;
-    VkDescriptorSetLayout ssboSetLayout;
+    VkDescriptorSetLayout SSBOSetLayout;
     std::vector<VkDescriptorSet> globalDescriptorSets;
 
 	VkCommandPool commandPool;
@@ -746,14 +746,14 @@ private:
 
 class HammerSSBO {
 private:
-    HammerEngine* engine;
+    Hammer* engine;
     VkBuffer buffer = VK_NULL_HANDLE;
     VkDeviceMemory bufferMemory = VK_NULL_HANDLE;
     VkDeviceSize bufferSize;
-    VkDescriptorSet SsboDescriptorSet = VK_NULL_HANDLE;
+    VkDescriptorSet SSBODescriptorSet = VK_NULL_HANDLE;
 
 public:
-    HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size);
+    HammerSSBO(Hammer* engine, const void* data, VkDeviceSize size);
 
     ~HammerSSBO();
 

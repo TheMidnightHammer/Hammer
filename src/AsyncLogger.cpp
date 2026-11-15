@@ -12,7 +12,7 @@
 #include <mutex>
 #include <condition_variable>
 
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 
 void HammerAsyncLogger::ProcessLogs() {
     while (running || !logQueue.empty()) {

@@ -8,7 +8,7 @@
 
 #include <vulkan/vulkan_core.h>
 
-void HammerEngine::createDescriptorSetLayout() {
+void Hammer::createDescriptorSetLayout() {
     VkDescriptorSetLayoutBinding uboLayoutBinding{};
     uboLayoutBinding.binding = 0;
     uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -40,24 +40,24 @@ void HammerEngine::createDescriptorSetLayout() {
         throw std::runtime_error("failed to create texture descriptor set layout!");
     }
 
-    VkDescriptorSetLayoutBinding ssboLayoutBinding{};
-    ssboLayoutBinding.binding = 0;
-    ssboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-    ssboLayoutBinding.descriptorCount = 1;
-    ssboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-    ssboLayoutBinding.pImmutableSamplers = nullptr;
+    VkDescriptorSetLayoutBinding SSBOLayoutBinding{};
+    SSBOLayoutBinding.binding = 0;
+    SSBOLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+    SSBOLayoutBinding.descriptorCount = 1;
+    SSBOLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
+    SSBOLayoutBinding.pImmutableSamplers = nullptr;
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
     layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
     layoutInfo.bindingCount = 1;
-    layoutInfo.pBindings = &ssboLayoutBinding;
+    layoutInfo.pBindings = &SSBOLayoutBinding;
 
-    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &ssboSetLayout) != VK_SUCCESS) {
+    if (vkCreateDescriptorSetLayout(device, &layoutInfo, nullptr, &SSBOSetLayout) != VK_SUCCESS) {
         throw std::runtime_error("failed to create SSBO descriptor set layout!");
     }
 }
 
-void HammerEngine::createUniformBuffers() {
+void Hammer::createUniformBuffers() {
     VkDeviceSize bufferSize = sizeof(UniformBufferObject);
 
     uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -71,7 +71,7 @@ void HammerEngine::createUniformBuffers() {
     }
 }
 
-void HammerEngine::createDescriptorPool() {
+void Hammer::createDescriptorPool() {
     std::array<VkDescriptorPoolSize, 3> poolSizes{};
 
     // Uniform Buffers (Set 0 for global matrices - used by ALL pipelines)
@@ -94,7 +94,7 @@ void HammerEngine::createDescriptorPool() {
     poolInfo.pPoolSizes = poolSizes.data();
 
     // Total maximum sets that can be allocated out of this pool at any given time
-    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) + MaxTextures + maxSSBOs;
+    poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) + maxTextures + maxSSBOs;
 
     poolInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 
@@ -103,7 +103,7 @@ void HammerEngine::createDescriptorPool() {
     }
 }
 
-void HammerEngine::createDescriptorSets() {
+void Hammer::createDescriptorSets() {
     globalDescriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
 
     std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, globalSetLayout);

@@ -7,8 +7,8 @@ https://discord.gg/TRSJ8WD7Xr
 
 [Showoff.webm](https://github.com/user-attachments/assets/d3d87ad2-bde6-4431-944c-7280afff7d88)
 
-# The goal of Hammer Engine
-The goal of the Hammer Engine is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5, even old games like Doom 3 (dhewm3) will struggle, this is why I made a Vulkan engine with a very optimized rendering pipeline.
+# The goal of Hammer
+The goal of Hammer is combining ease of use and the speed of Vulkan to make 2d/3d games as fast and fun as possible. With single-board computers like the Raspberry Pi 5, even old games like Doom 3 (dhewm3) will struggle, this is why I made a Vulkan engine with a very optimized rendering pipeline.
 
 # The performance of Hammer
 

@@ -4,7 +4,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 
 Char HammerFont::charCoor(int index, int totalChars, float xOffset, float yOffset, float charWidth, float charHeight, const char name) {
     float textureWidth = 2048.0f;

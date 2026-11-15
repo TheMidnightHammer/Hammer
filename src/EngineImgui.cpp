@@ -12,7 +12,7 @@
 #include "../lib/imgui/imgui_impl_glfw.h"
 #include "../lib/imgui/imgui_impl_vulkan.h"
 
-void HammerEngine::InitImgui() {
+void Hammer::InitImgui() {
     useImGui = true;
     VkDescriptorPoolSize pool_sizes[] = {
         { VK_DESCRIPTOR_TYPE_SAMPLER, 1000 },

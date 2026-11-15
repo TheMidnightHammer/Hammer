@@ -40,15 +40,15 @@ void HammerMesh::bindAndDraw(VkCommandBuffer commandBuffer, uint32_t currentFram
             vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline->pipelineLayout, 1, 1, &texture->descriptorSet, 0, nullptr);
         }
 
-        if (pipeline->ssbo != nullptr && pipeline->ssbo->getDescriptorSet() != VK_NULL_HANDLE) {
-            VkDescriptorSet ssboDescriptorSet = pipeline->ssbo->getDescriptorSet(); // compiler was yapping too much
+        if (pipeline->SSBO != nullptr && pipeline->SSBO->getDescriptorSet() != VK_NULL_HANDLE) {
+            VkDescriptorSet SSBODescriptorSet = pipeline->SSBO->getDescriptorSet(); // compiler was yapping too much
             vkCmdBindDescriptorSets(
                 commandBuffer,
                 VK_PIPELINE_BIND_POINT_GRAPHICS,
                 pipeline->pipelineLayout,
                 2,
                 1,
-                &ssboDescriptorSet,
+                &SSBODescriptorSet,
                 0,
                 nullptr
             );
@@ -146,7 +146,7 @@ void HammerMesh::syncVertexIndexBuffers() {
     oldVertexData = this->vertexData.size();
 }
 
-HammerMesh::HammerMesh(HammerEngine* engine, HammerPipeline* pipeline, HammerTexture* texture, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
+HammerMesh::HammerMesh(Hammer* engine, HammerPipeline* pipeline, HammerTexture* texture, const std::vector<Vertex>& vertices, const std::vector<uint32_t>& indices)
                        : engine(engine), pipeline(pipeline), texture(texture) {
 
     indexCount = static_cast<uint32_t>(indices.size());

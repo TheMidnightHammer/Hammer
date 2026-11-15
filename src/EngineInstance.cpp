@@ -30,7 +30,7 @@ void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT
 }
 #endif // ENABLE_VULKAN_VALIDATION_LAYERS
 
-void HammerEngine::createInstance() {
+void Hammer::createInstance() {
 #ifdef ENABLE_VULKAN_VALIDATION_LAYERS
     if (!checkValidationLayerSupport()) {
         throw std::runtime_error("validation layers requested, but not available!");
@@ -41,7 +41,7 @@ void HammerEngine::createInstance() {
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "idk";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
-    appInfo.pEngineName = "HammerEngine";
+    appInfo.pEngineName = "Hammer";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_4;
 
@@ -70,15 +70,15 @@ void HammerEngine::createInstance() {
 }
 
 #ifdef ENABLE_VULKAN_VALIDATION_LAYERS
-void HammerEngine::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
+void Hammer::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
     createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
-    createInfo.pfnUserCallback = HammerEngine::debugCallback;
+    createInfo.pfnUserCallback = Hammer::debugCallback;
 }
 
-void HammerEngine::setupDebugMessenger() {
+void Hammer::setupDebugMessenger() {
     VkDebugUtilsMessengerCreateInfoEXT createInfo;
     populateDebugMessengerCreateInfo(createInfo);
 
@@ -88,13 +88,13 @@ void HammerEngine::setupDebugMessenger() {
 }
 #endif // ENABLE_VULKAN_VALIDATION_LAYERS
 
-void HammerEngine::createSurface() {
+void Hammer::createSurface() {
     if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface!");
     }
 }
 
-void HammerEngine::pickPhysicalDevice() {
+void Hammer::pickPhysicalDevice() {
         uint32_t deviceCount = 0;
         vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
 
@@ -140,7 +140,7 @@ void HammerEngine::pickPhysicalDevice() {
         }
     }
 
-void HammerEngine::createLogicalDevice() {
+void Hammer::createLogicalDevice() {
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
@@ -185,7 +185,7 @@ void HammerEngine::createLogicalDevice() {
     vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
 
-bool HammerEngine::isDeviceSuitable(VkPhysicalDevice device) {
+bool Hammer::isDeviceSuitable(VkPhysicalDevice device) {
     QueueFamilyIndices indices = findQueueFamilies(device);
 
     bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -202,7 +202,7 @@ bool HammerEngine::isDeviceSuitable(VkPhysicalDevice device) {
     return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-bool HammerEngine::checkDeviceExtensionSupport(VkPhysicalDevice device) {
+bool Hammer::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
 
@@ -218,7 +218,7 @@ bool HammerEngine::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     return requiredExtensions.empty();
 }
 
-QueueFamilyIndices HammerEngine::findQueueFamilies(VkPhysicalDevice device) {
+QueueFamilyIndices Hammer::findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
 
     uint32_t queueFamilyCount = 0;
@@ -250,7 +250,7 @@ QueueFamilyIndices HammerEngine::findQueueFamilies(VkPhysicalDevice device) {
     return indices;
 }
 
-std::vector<const char*> HammerEngine::getRequiredExtensions() {
+std::vector<const char*> Hammer::getRequiredExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -265,7 +265,7 @@ std::vector<const char*> HammerEngine::getRequiredExtensions() {
 }
 
 #ifdef ENABLE_VULKAN_VALIDATION_LAYERS
-bool HammerEngine::checkValidationLayerSupport() {
+bool Hammer::checkValidationLayerSupport() {
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -290,7 +290,7 @@ bool HammerEngine::checkValidationLayerSupport() {
     return true;
 }
 
-VKAPI_ATTR VkBool32 VKAPI_CALL HammerEngine::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
+VKAPI_ATTR VkBool32 VKAPI_CALL Hammer::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
     std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
     return VK_FALSE;

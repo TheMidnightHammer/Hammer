@@ -4,11 +4,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerEngine.h" 
+#include "../include/Hammer/Hammer.h" 
 #include <stdexcept>
 
 
-HammerSSBO::HammerSSBO(HammerEngine* engine, const void* data, VkDeviceSize size) 
+HammerSSBO::HammerSSBO(Hammer* engine, const void* data, VkDeviceSize size) 
     : engine(engine), bufferSize(size) {
     
     createStorageBuffer(data);
@@ -26,7 +26,7 @@ HammerSSBO::~HammerSSBO() {
 
 VkBuffer HammerSSBO::getBuffer() { return buffer; }
 VkDeviceSize HammerSSBO::getSize() { return bufferSize; }
-VkDescriptorSet HammerSSBO::getDescriptorSet() {    return SsboDescriptorSet; }
+VkDescriptorSet HammerSSBO::getDescriptorSet() {    return SSBODescriptorSet; }
 
 void HammerSSBO::updateData(const void* newData, VkDeviceSize newSize) {
     if (newData == nullptr || newSize == 0) return;
@@ -48,7 +48,7 @@ void HammerSSBO::updateData(const void* newData, VkDeviceSize newSize) {
 
         VkWriteDescriptorSet descriptorWrite{};
         descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-        descriptorWrite.dstSet = SsboDescriptorSet;
+        descriptorWrite.dstSet = SSBODescriptorSet;
         descriptorWrite.dstBinding = 0; 
         descriptorWrite.dstArrayElement = 0;
         descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -113,7 +113,7 @@ void HammerSSBO::allocateAndWriteDescriptorSet() {
     VkDescriptorSetLayout temp = engine->getSsboSetLayout();
     allocInfo.pSetLayouts = &temp;
 
-    if (vkAllocateDescriptorSets(engine->getDevice(), &allocInfo, &SsboDescriptorSet) != VK_SUCCESS) {
+    if (vkAllocateDescriptorSets(engine->getDevice(), &allocInfo, &SSBODescriptorSet) != VK_SUCCESS) {
         throw std::runtime_error("Failed to allocate SSBO descriptor set!");
     }
 
@@ -124,7 +124,7 @@ void HammerSSBO::allocateAndWriteDescriptorSet() {
 
     VkWriteDescriptorSet descriptorWrite{};
     descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-    descriptorWrite.dstSet = SsboDescriptorSet;
+    descriptorWrite.dstSet = SSBODescriptorSet;
     descriptorWrite.dstBinding = 0; 
     descriptorWrite.dstArrayElement = 0;
     descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;

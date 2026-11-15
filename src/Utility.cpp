@@ -4,13 +4,13 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "../include/HammerEngine/HammerEngine.h"
+#include "../include/Hammer/Hammer.h"
 #include <iostream>
 #include <vulkan/vulkan_core.h>
 
 using namespace std;
 
-void HammerEngine::initWindow() {
+void Hammer::initWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
@@ -23,7 +23,7 @@ void HammerEngine::initWindow() {
     window = glfwCreateWindow(windowWidth, windowHeight, windowName.c_str(), targetMonitor, nullptr);
     
     glfwSetWindowUserPointer(window, this);
-    glfwSetFramebufferSizeCallback(window, HammerEngine::framebufferResizeCallback);
+    glfwSetFramebufferSizeCallback(window, Hammer::framebufferResizeCallback);
 
     if (mouseLock) {
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -34,16 +34,16 @@ void HammerEngine::initWindow() {
     // glfwMakeContextCurrent(window) this is a opengl command and i was calling this in vulkan, yikks
 }
 
-void HammerEngine::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
-    auto app = reinterpret_cast<HammerEngine*>(glfwGetWindowUserPointer(window));
+void Hammer::framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+    auto app = reinterpret_cast<Hammer*>(glfwGetWindowUserPointer(window));
     app->framebufferResized = true;
 }
 
-void HammerEngine::drawPassEnd(){
+void Hammer::drawPassEnd(){
     vkDeviceWaitIdle(device);
 }
 
-void HammerEngine::updateFrameTimeEnd(){
+void Hammer::updateFrameTimeEnd(){
     auto end = std::chrono::high_resolution_clock::now();
     auto frameDuration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
     totalFrameTime += frameDuration;
@@ -57,14 +57,14 @@ void HammerEngine::updateFrameTimeEnd(){
     }
 }
 
-void HammerEngine::drawPassStart(){
+void Hammer::drawPassStart(){
     previousTime = glfwGetTime();
     frameCount = 0;
 
     std::chrono::milliseconds totalFrameTime(0);
 }
 
-void HammerEngine::updateFrameTimeStart(){
+void Hammer::updateFrameTimeStart(){
     start = std::chrono::high_resolution_clock::now();
 
     currentTime = glfwGetTime();
