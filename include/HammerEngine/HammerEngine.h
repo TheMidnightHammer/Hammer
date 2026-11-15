@@ -65,29 +65,18 @@ public:
  *   cmake -DENABLE_VULKAN_VALIDATION_LAYERS=ON ..
  * When the macro is not defined, all validation layer code is compiled out.
  */
-class HammerInfo {
+struct HammerInfo {
 public:
-
-    int windowWidth;
-    int windowHeight;
-    std::string windowName;
-    int MaxTextures;
-    bool mouseLock;
-    float cameraSpeed;
-    float renderDistance;
-    VkDeviceSize stagingBufferSize;
-
-    HammerInfo(int WindowWidth,
-                int WindowHeight,
-                const std::string& WindowName,
-                int maxTextures,
-                bool MouseLock,
-                float CameraSpeed,
-                float RenderDistance,
-                VkDeviceSize StagingBufferSize) : windowHeight(WindowHeight), windowWidth(WindowWidth),
-                                                windowName(WindowName), MaxTextures(maxTextures),
-                                                mouseLock(MouseLock), cameraSpeed(CameraSpeed),
-                                                renderDistance(RenderDistance), stagingBufferSize(StagingBufferSize) {}
+    // all of those var have a default because if someone forgets to add any of those it will work
+    bool isFullscreen = false;
+    int windowWidth = 400; // small for small screens
+    int windowHeight = 340;
+    std::string windowName = "Hammer";
+    int MaxTextures = 2048; // good for simple games
+    bool mouseLock = false;
+    float cameraSpeed = 1.0f;
+    float renderDistance = 512.0f;
+    VkDeviceSize stagingBufferSize = 1024*1024*16; // 16 mb
 };
 
 struct UniformBufferObject {
@@ -471,14 +460,11 @@ public:
 
     GLFWmonitor* targetMonitor = nullptr;
 
+    // system info
     std::string windowName = "Hammer Engine";
-
     std::string GPUName = "NONE SELECTED";
-
     std::string driverName = "NONE SELECTED";
-
     std::string driverInfo = "NONE SELECTED";
-
     uint32_t driverVersion = 0;
 
     bool mouseLock = false;
@@ -487,11 +473,7 @@ public:
 
     float cameraFallSpeed = 0.01; // how fast the camera falls in gravaty enabled.
 
-    bool fullscreen = false;
-
     int FPS = 0;
-
-    bool useImGui = false;
 
     void InitImgui();
 
@@ -599,6 +581,9 @@ public:
     VkDeviceSize stagingBuffer2Size = 0;
 
 private:
+    bool isFullscreen = false;
+
+    bool useImGui = false;
 
     int MaxTextures = 1000;
 

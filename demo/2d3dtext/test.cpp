@@ -11,7 +11,17 @@
 
 int main() {
 
-    HammerInfo info(1000, 1000, "Hammer", 1000, false, 1.0f, 16.0f, 1024*1024*16);
+    HammerInfo info {
+        .isFullscreen = false,
+        .windowWidth = 1000,
+        .windowHeight = 1000,
+        .windowName = "Hammer",
+        .MaxTextures = 1000, // what ever you want really
+        .mouseLock = false,
+        .cameraSpeed = 1.0f,
+        .renderDistance = 16.0f,
+        .stagingBufferSize = 1024*1024*16,
+    };
 
     HammerEngine* engine = new HammerEngine(info);
     engine->initWindow();

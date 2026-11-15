@@ -14,7 +14,7 @@ void HammerEngine::initWindow() {
     glfwInit();
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-    if(fullscreen){
+    if(isFullscreen){
         targetMonitor = glfwGetPrimaryMonitor(); 
     } else {
         targetMonitor = nullptr; 
